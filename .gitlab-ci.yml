@@ -1,5 +1,5 @@
 build-job:
-  image: eclipse-temurin:17-alpine
+  image: eclipse-temurin:20-alpine
   script:
     - apt-get update && apt-get install -y maven
     - mvn -version
