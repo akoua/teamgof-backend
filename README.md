@@ -1,4 +1,4 @@
-# GofApi
+# GofApi flow
 
 Pour la bonne organisation du code, nous suivrons l'organisation suivante:
 
