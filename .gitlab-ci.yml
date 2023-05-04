@@ -1,4 +1,4 @@
-image: adoptopenjdk/openjdk17:latest
+image: eclipse-temurin:20
 
 build-job:
 #  image: eclipse-temurin:20-alpine
