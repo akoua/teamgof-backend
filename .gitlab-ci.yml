@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - staging
   - deploy
 
 default:
