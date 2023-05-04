@@ -1,7 +1,16 @@
+stages:
+  - build
+  - test
+  - deploy
+  -
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
 image: eclipse-temurin:20
 
 build-job:
-#  image: eclipse-temurin:20-alpine
+  stage: build
   script:
     - apt-get update && apt-get install -y maven
     - mvn -version
@@ -10,4 +19,4 @@ build-job:
     - mvn compile
   artifacts:
     paths:
-      - "build"
+      - "build/"
