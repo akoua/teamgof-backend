@@ -1,6 +1,10 @@
 # GofApi
 
+Pour la bonne organisation du code, nous suivrons l'organisation suivante:
 
+- Je tire ma nouvelle branhce de dev depuis la branche stab
+- Je crée toujours une merge request en partant de la stab
+- Je ne push pas directement sur le main ou la stab
 
 ## Getting started
 
