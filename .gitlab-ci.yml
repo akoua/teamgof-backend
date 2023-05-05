@@ -1,7 +1,7 @@
 stages:
   - build
   - test
-  - release image docker
+  - release image
   - staging
   - deploy
 
