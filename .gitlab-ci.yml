@@ -8,9 +8,9 @@ stages:
 default:
   image: eclipse-temurin:20
 
-workflow:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+#workflow:
+#  rules:
+#    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
 build-job:
   stage: build
