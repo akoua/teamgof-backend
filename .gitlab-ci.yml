@@ -23,7 +23,7 @@ cache:
 build-job:
   stage: build
   tags:
-    - vps #tag to vps runner
+    - vps #tag to vps runner d
 #  services:
 #    - name: postgres:alpine
 #      alias: mydb
