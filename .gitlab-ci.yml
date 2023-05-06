@@ -15,7 +15,10 @@ default:
 build-job:
   stage: build
   tags:
-    - vps
+    - vps #tag to vps runner
+#  services:
+#    - name: postgres:alpine
+#      alias: mydb
   script:
     - apt-get update && apt-get install -y maven
     - mvn clean
