@@ -8,9 +8,17 @@ stages:
 default:
   image: eclipse-temurin:20
 
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dstyle.color=always "
+
 #workflow:
 #  rules:
 #    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+
+cache:
+  - key: dependencies
+    paths:
+      - .m2
 
 build-job:
   stage: build
