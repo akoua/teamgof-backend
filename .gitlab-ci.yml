@@ -33,7 +33,8 @@ build-job:
     - eval $(ssh-agent -s)
 #    - chmod 400 "$SSH_PRIVATE_KEY"
 #    - echo "$SSH_PRIVATE_KEY" | tr -d "\r" | ssh-add -
-    - echo "$SSH_USER"
+    - echo "bonjour"
+    - echo $SSH_USER
     - echo "$SSH_PRIVATE_KEY_OWN"
     - echo "$SSH_PRIVATE_KEY_OWN" | tr -d '\r' | ssh-add -
     - mkdir -p ~/.ssh
