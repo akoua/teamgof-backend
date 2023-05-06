@@ -10,7 +10,6 @@ default:
 
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dstyle.color=always"
-  SSH_PRIVATE_KEY_OWN: $SSH_PRIVATE_KEY
 
 #workflow:
 #  rules:
