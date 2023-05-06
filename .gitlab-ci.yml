@@ -41,6 +41,7 @@ build-job:
     - ssh-keygen $SSH_TARGET >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
   script:
+    - ssh $SSH_USER@$SSH_TARGET "hostname"
     - apt-get update && apt-get install -y maven
     - mvn clean
     - mvn compile
