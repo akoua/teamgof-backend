@@ -46,6 +46,11 @@ cache:
     - ssh-keyscan $SSH_TARGET >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
     - ssh $SSH_USER@$SSH_TARGET "hostname"
+    -
+.docker_and_login_script:
+  before_script:
+    - .login_docker_hub
+    - .login_ssh
 
 build-job:
   stage: build
@@ -119,8 +124,7 @@ deploy-job:
   tags:
     - vps
   extends:
-    - .login_ssh
-    - .login_docker_hub
+    - .docker_and_login_script
   script:
     - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name my_container -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
