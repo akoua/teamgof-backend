@@ -7,8 +7,8 @@ stages:
   - staging
   - deploy
 
-#default:
-#  image: eclipse-temurin:20
+default:
+  image: eclipse-temurin:20
 
 variables:
   VARIABLES_FILE: "./variables.txt"
