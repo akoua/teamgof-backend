@@ -77,28 +77,30 @@ build_docker_job:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
 #    - source ${VARIABLES_FILE}
-    - docker build -t $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_SHORT_SHA
+    - echo $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_SHORT_SHA
+    - echo $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_REF_SLUG
+    - docker buildx b -t $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_SHORT_SHA
     - docker build -t $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_REF_SLUG
     - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_SHORT_SHA
     - docker push $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_REF_SLUG
 
-deploy-job:
-  stage: deploy
-  needs:
-    - build_docker_job
-  tags:
-    - vps
-  before_script:
-    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-    - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-    - mkdir -p ~/.ssh
-    - chmod 700 ~/.ssh
-    - ssh-keyscan $SSH_TARGET >> ~/.ssh/known_hosts
-    - chmod 644 ~/.ssh/known_hosts
-  script:
-    - ssh $SSH_USER@$SSH_TARGET "hostname"
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-  environment: production
+#deploy-job:
+#  stage: deploy
+#  needs:
+#    - build_docker_job
+#  tags:
+#    - vps
+#  before_script:
+#    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+#    - eval $(ssh-agent -s)
+#    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+#    - mkdir -p ~/.ssh
+#    - chmod 700 ~/.ssh
+#    - ssh-keyscan $SSH_TARGET >> ~/.ssh/known_hosts
+#    - chmod 644 ~/.ssh/known_hosts
+#  script:
+#    - ssh $SSH_USER@$SSH_TARGET "hostname"
+#  rules:
+#    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+#    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+#  environment: production
