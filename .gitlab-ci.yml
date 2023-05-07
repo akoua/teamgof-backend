@@ -49,10 +49,8 @@ cache:
     -
 .docker_and_login_script:
   before_script:
-    - include:
-        - .login_docker_hub
-    - include:
-        - .login_ssh
+    - ./.login_docker_hub
+    - ./.login_ssh
 
 build-job:
   stage: build
