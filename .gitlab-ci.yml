@@ -46,18 +46,11 @@ cache:
     - ssh-keyscan $SSH_TARGET >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
     - ssh $SSH_USER@$SSH_TARGET "hostname"
-    -
-.docker_and_login_script:
-  before_script:
-    - ./.login_docker_hub
-    - ./.login_ssh
 
 build-job:
   stage: build
   tags:
     - vps #tag to vps runner
-  extends:
-    - .docker_and_login_script
   script:
     - apt-get update && apt-get install -y maven
     - mvn ${MAVEN_OPTS} -B clean test
@@ -126,8 +119,16 @@ deploy-job:
   tags:
     - vps
   extends:
-    - .docker_and_login_script
+    - .login_docker_hub
   script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SSH_TARGET >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ssh $SSH_USER@$SSH_TARGET "hostname"
     - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name my_container -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   #  rules:
