@@ -49,13 +49,17 @@ cache:
     -
 .docker_and_login_script:
   before_script:
-    - .login_docker_hub
-    - .login_ssh
+    - include:
+        - .login_docker_hub
+    - include:
+        - .login_ssh
 
 build-job:
   stage: build
   tags:
     - vps #tag to vps runner
+  extends:
+    - .docker_and_login_script
   script:
     - apt-get update && apt-get install -y maven
     - mvn ${MAVEN_OPTS} -B clean test
