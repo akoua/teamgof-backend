@@ -104,10 +104,19 @@ deploy-job:
 #    - build-job
 #    - test-job
 #    - build_docker_job
-#  tags:
-#    - vps
-  extends:
-    - .login_docker_hub
+  tags:
+    - vps
+#  extends:
+#    - .login_docker_hub
+  image: docker:stable
+  services:
+    - name: docker:dind
+      alias: docker
+  variables:
+    DOCKER_BUILDKIT: 1
+    DOCKER_DRIVER: overlay2
+    #    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
   script:
     - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
     - eval $(ssh-agent -s)
@@ -117,7 +126,7 @@ deploy-job:
     - ssh-keyscan $SSH_TARGET >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
     - ssh $SSH_USER@$SSH_TARGET "hostname"
-#    - ssh $SSH_USER@$SSH_TARGET echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - ssh $SSH_USER@$SSH_TARGET echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - ssh $SSH_USER@$SSH_TARGET docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name my_container -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   #  rules:
