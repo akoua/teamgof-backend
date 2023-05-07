@@ -23,46 +23,46 @@ cache:
     paths:
       - .m2
 
-build-job:
-  stage: build
-  tags:
-    - vps #tag to vps runner
-  script:
-    - apt-get update && apt-get install -y maven
-    - mvn ${MAVEN_OPTS} -B clean test
-    - MVN_VERSION=$(mvn --non-recursive help:evaluate -Dexpression=project.version | grep -v '\[.*')
-    - echo $MVN_VERSION
-    - echo 'export MVN_VERSION=$MVN_VERSION' > ${VARIABLES_FILE}
-  except:
-    changes:
-      - "*.md" #you don't want to run pipeline if it's not contains changes in readme
-#      - ".gitlab-ci.*"
-  artifacts:
-    paths:
-      - ${VARIABLES_FILE}
-    expire_in: 7 days
-
-test-job:
-  stage: test
-  tags:
-    - vps #tag to vps runner
-  script:
-    - apt-get update && apt-get install -y maven
-    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
-#  rules:
-#    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  artifacts:
-    paths:
-      - target/*.jar
-    expire_in: 7 days
+#build-job:
+#  stage: build
+#  tags:
+#    - vps #tag to vps runner
+#  script:
+#    - apt-get update && apt-get install -y maven
+#    - mvn ${MAVEN_OPTS} -B clean test
+#    - MVN_VERSION=$(mvn --non-recursive help:evaluate -Dexpression=project.version | grep -v '\[.*')
+#    - echo $MVN_VERSION
+#    - echo 'export MVN_VERSION=$MVN_VERSION' > ${VARIABLES_FILE}
+#  except:
+#    changes:
+#      - "*.md" #you don't want to run pipeline if it's not contains changes in readme
+##      - ".gitlab-ci.*"
+#  artifacts:
+#    paths:
+#      - ${VARIABLES_FILE}
+#    expire_in: 7 days
+#
+#test-job:
+#  stage: test
+#  tags:
+#    - vps #tag to vps runner
+#  script:
+#    - apt-get update && apt-get install -y maven
+#    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
+##  rules:
+##    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+#  artifacts:
+#    paths:
+#      - target/*.jar
+#    expire_in: 7 days
 
 build_docker_job:
   stage: release image
   tags:
     - vps
-  needs:
-    - build-job
-    - test-job
+#  needs:
+#    - build-job
+#    - test-job
   image: docker
   services:
     - name: docker:dind
