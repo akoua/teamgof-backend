@@ -79,7 +79,7 @@ build_docker_job:
 #    - source ${VARIABLES_FILE}
     - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
     - echo $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_REF_SLUG
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker build --platform linux/amd64,linux/arm64 -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
