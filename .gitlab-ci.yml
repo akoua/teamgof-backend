@@ -36,6 +36,9 @@ build-job:
   except:
     changes:
       - "*.md" #you don't want to run pipeline if it's not contains changes in readme
+      - ".gitlab-ci.*"
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   artifacts:
     paths:
       - "target/*.jar"
