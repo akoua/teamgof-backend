@@ -74,7 +74,7 @@ build_docker_job:
     DOCKER_HOST: registry-1.docker.io
     DOCKER_TLS_CERTDIR: ""
   script:
-    - source ${VARIABLES_FILE}
+#    - source ${VARIABLES_FILE}
     - echo $DOCKER_HUB_PWD | docker login -u $DOCKER_HUB_USERNAME --password-stdin --registry $DOCKER_HUB_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
                    -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
