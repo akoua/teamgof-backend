@@ -23,6 +23,19 @@ cache:
     paths:
       - .m2
 
+.login_docker_hub:
+  image: docker:stable
+  services:
+    - name: docker:dind
+      alias: docker
+  variables:
+    DOCKER_BUILDKIT: 1
+    DOCKER_DRIVER: overlay2
+    #    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+
 build-job:
   stage: build
   tags:
@@ -63,18 +76,20 @@ build_docker_job:
   needs:
     - build-job
     - test-job
-  image: docker:stable
-  services:
-    - name: docker:dind
-      alias: docker
-  variables:
-    DOCKER_BUILDKIT: 1
-    DOCKER_DRIVER: overlay2
-#    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-  before_script:
-#    - docker info
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+#  image: docker:stable
+#  services:
+#    - name: docker:dind
+#      alias: docker
+#  variables:
+#    DOCKER_BUILDKIT: 1
+#    DOCKER_DRIVER: overlay2
+##    DOCKER_HOST: tcp://docker:2375
+#    DOCKER_TLS_CERTDIR: ""
+#  before_script:
+##    - docker info
+#    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  extends:
+    - .login_docker_hub
   script:
 #    - source ${VARIABLES_FILE}
     - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
@@ -84,23 +99,29 @@ build_docker_job:
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
-#deploy-job:
-#  stage: deploy
-#  needs:
-#    - build_docker_job
-#  tags:
-#    - vps
-#  before_script:
-#    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
-#    - eval $(ssh-agent -s)
-#    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
-#    - mkdir -p ~/.ssh
-#    - chmod 700 ~/.ssh
-#    - ssh-keyscan $SSH_TARGET >> ~/.ssh/known_hosts
-#    - chmod 644 ~/.ssh/known_hosts
-#  script:
-#    - ssh $SSH_USER@$SSH_TARGET "hostname"
-#  rules:
+deploy-job:
+  stage: deploy
+  needs:
+    - build-job
+    - test-job
+    - build_docker_job
+  tags:
+    - vps
+  before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $SSH_TARGET >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+    - ssh $SSH_USER@$SSH_TARGET "hostname"
+  extends:
+    - .login_docker_hub
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    - ssh $SSH_USER@$SSH_TARGET "docker run -d --name my_container -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+  #  rules:
 #    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 #    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-#  environment: production
+  environment: production
