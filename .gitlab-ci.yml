@@ -29,7 +29,6 @@ build-job:
     - vps #tag to vps runner
   script:
     - apt-get update && apt-get install -y maven
-    - echo $DOCKER_HUB_PWD | docker login -u $DOCKER_HUB_USERNAME ---password-stdin $DOCKER_HUB_REGISTRY
     - mvn ${MAVEN_OPTS} -B clean test
     - MVN_VERSION=$(mvn --non-recursive help:evaluate -Dexpression=project.version | grep -v '\[.*')
     - echo $MVN_VERSION
