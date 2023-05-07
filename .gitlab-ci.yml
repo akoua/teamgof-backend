@@ -83,7 +83,7 @@ build_docker_job:
 deploy-job:
   stage: deploy
   needs:
-    - release image
+    - build_docker_job
   tags:
     - vps
   before_script:
