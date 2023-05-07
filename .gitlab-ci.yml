@@ -119,8 +119,8 @@ deploy-job:
   tags:
     - vps
   extends:
-    - .login_docker_hub
     - .login_ssh
+    - .login_docker_hub
   script:
     - docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name my_container -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
