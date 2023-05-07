@@ -47,6 +47,7 @@ test-job:
   tags:
     - vps #tag to vps runner
   script:
+    - apt-get update && apt-get install -y maven
     - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -B clean install
 #  rules:
 #    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
@@ -81,6 +82,8 @@ build_docker_job:
 
 deploy-job:
   stage: deploy
+  needs:
+    - build_docker_job
   tags:
     - vps
   before_script:
