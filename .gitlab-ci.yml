@@ -48,7 +48,7 @@ test-job:
     - vps #tag to vps runner
   script:
     - apt-get update && apt-get install -y maven
-    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -B clean install
+    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
 #  rules:
 #    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   artifacts:
@@ -70,11 +70,12 @@ build_docker_job:
   variables:
     DOCKER_BUILDKIT: 1
     DOCKER_DRIVER: overlay2
-    DOCKER_HOST: tcp://docker:2375
+#    DOCKER_HOST: tcp://docker:2375
+    DOCKER_HOST: registry-1.docker.io
     DOCKER_TLS_CERTDIR: ""
   script:
     - source ${VARIABLES_FILE}
-    - echo $DOCKER_HUB_PWD | docker login -u $DOCKER_HUB_USERNAME --password-stdin $DOCKER_HUB_REGISTRY
+    - echo $DOCKER_HUB_PWD | docker login -u $DOCKER_HUB_USERNAME --password-stdin --registry $DOCKER_HUB_REGISTRY
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
                    -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
