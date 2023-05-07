@@ -47,77 +47,65 @@ cache:
     - chmod 644 ~/.ssh/known_hosts
     - ssh $SSH_USER@$SSH_TARGET "hostname"
 
-build-job:
-  stage: build
-  tags:
-    - vps #tag to vps runner
-  script:
-    - apt-get update && apt-get install -y maven
-    - mvn ${MAVEN_OPTS} -B clean test
-    - MVN_VERSION=$(mvn --non-recursive help:evaluate -Dexpression=project.version | grep -v '\[.*')
-    - echo $MVN_VERSION
-    - echo 'export MVN_VERSION=$MVN_VERSION' > ${VARIABLES_FILE}
-  except:
-    changes:
-      - "*.md" #you don't want to run pipeline if it's not contains changes in readme
-#      - ".gitlab-ci.*"
-  artifacts:
-    paths:
-      - ${VARIABLES_FILE}
-    expire_in: 7 days
-
-test-job:
-  stage: test
-  tags:
-    - vps #tag to vps runner
-  script:
-    - apt-get update && apt-get install -y maven
-    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
-#  rules:
-#    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  artifacts:
-    paths:
-      - target/*.jar
-    expire_in: 7 days
-
-build_docker_job:
-  stage: release image
-  tags:
-    - vps
-  needs:
-    - build-job
-    - test-job
-#  image: docker:stable
-#  services:
-#    - name: docker:dind
-#      alias: docker
-#  variables:
-#    DOCKER_BUILDKIT: 1
-#    DOCKER_DRIVER: overlay2
-##    DOCKER_HOST: tcp://docker:2375
-#    DOCKER_TLS_CERTDIR: ""
-#  before_script:
-##    - docker info
-#    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-  extends:
-    - .login_docker_hub
-  script:
-#    - source ${VARIABLES_FILE}
-    - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-    - echo $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_REF_SLUG
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
-    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+#build-job:
+#  stage: build
+#  tags:
+#    - vps #tag to vps runner
+#  script:
+#    - apt-get update && apt-get install -y maven
+#    - mvn ${MAVEN_OPTS} -B clean test
+#    - MVN_VERSION=$(mvn --non-recursive help:evaluate -Dexpression=project.version | grep -v '\[.*')
+#    - echo $MVN_VERSION
+#    - echo 'export MVN_VERSION=$MVN_VERSION' > ${VARIABLES_FILE}
+#  except:
+#    changes:
+#      - "*.md" #you don't want to run pipeline if it's not contains changes in readme
+##      - ".gitlab-ci.*"
+#  artifacts:
+#    paths:
+#      - ${VARIABLES_FILE}
+#    expire_in: 7 days
+#
+#test-job:
+#  stage: test
+#  tags:
+#    - vps #tag to vps runner
+#  script:
+#    - apt-get update && apt-get install -y maven
+#    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
+##  rules:
+##    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+#  artifacts:
+#    paths:
+#      - target/*.jar
+#    expire_in: 7 days
+#
+#build_docker_job:
+#  stage: release image
+#  tags:
+#    - vps
+#  needs:
+#    - build-job
+#    - test-job
+#  extends:
+#    - .login_docker_hub
+#  script:
+##    - source ${VARIABLES_FILE}
+#    - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+#    - echo $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_REF_SLUG
+#    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+#    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+#    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+#    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
 
 deploy-job:
   stage: deploy
-  needs:
-    - build-job
-    - test-job
-    - build_docker_job
-  tags:
-    - vps
+#  needs:
+#    - build-job
+#    - test-job
+#    - build_docker_job
+#  tags:
+#    - vps
   extends:
     - .login_docker_hub
   script:
@@ -129,6 +117,7 @@ deploy-job:
     - ssh-keyscan $SSH_TARGET >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
     - ssh $SSH_USER@$SSH_TARGET "hostname"
+    - ssh $SSH_USER@$SSH_TARGET echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - ssh $SSH_USER@$SSH_TARGET docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name my_container -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   #  rules:
