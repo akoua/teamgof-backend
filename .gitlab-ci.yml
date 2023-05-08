@@ -57,8 +57,8 @@ build-job:
 #    - mvn ${MAVEN_OPTS} -B clean test
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
-#    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == $CI_COMMIT_REF_SLUG
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
 #  except:
 #    changes:
 #      - "*.md" #you don't want to run pipeline if it's not contains changes in readme
