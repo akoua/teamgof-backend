@@ -1,0 +1,14 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://194.163.158.136:5432/team_gof
+    username: user
+    password: root
+    type: com.zaxxer.hikari.HikariDataSource
+  jpa:
+    showSql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect

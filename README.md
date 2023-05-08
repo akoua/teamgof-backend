@@ -1,6 +1,10 @@
-# teamgof-backend
+# GofApi flow
 
+Pour la bonne organisation du code, nous suivrons l'organisation suivante:
 
+- Je tire ma nouvelle branhce de dev depuis la branche stab
+- Je crée toujours une merge request en partant de la stab
+- Je ne push pas directement sur le main ou la stab
 
 ## Getting started
 
@@ -15,14 +19,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://gitlab.istic.univ-rennes1.fr/projet-pro-teamgof/teamgof-backend.git
+git remote add origin https://gitlab.istic.univ-rennes1.fr/gofgroup/gofapi.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://gitlab.istic.univ-rennes1.fr/projet-pro-teamgof/teamgof-backend/-/settings/integrations)
+- [ ] [Set up project integrations](https://gitlab.istic.univ-rennes1.fr/gofgroup/gofapi/-/settings/integrations)
 
 ## Collaborate with your team
 
