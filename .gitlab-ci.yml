@@ -51,6 +51,7 @@ build-job:
   tags:
     - vps #tag to vps runner
   script:
+    - echo $CI_DEFAULT_BRANCH
     - apt-get update && apt-get install -y maven
     - mvn ${MAVEN_OPTS} -B clean test
   except:
