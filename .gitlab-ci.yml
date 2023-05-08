@@ -52,6 +52,7 @@ build-job:
     - vps #tag to vps runner
   script:
     - echo $CI_DEFAULT_BRANCH
+    - echo $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
 #    - apt-get update && apt-get install -y maven
 #    - mvn ${MAVEN_OPTS} -B clean test
   rules:
@@ -128,8 +129,9 @@ deploy-job:
     - ssh $SSH_USER@$SSH_TARGET "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
     - ssh $SSH_USER@$SSH_TARGET "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name my_container -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-  only:
-    - $CI_DEFAULT_BRANCH
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"
   #  rules:
 #    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 #    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
