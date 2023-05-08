@@ -47,9 +47,9 @@ build-job:
   tags:
     - vps #tag to vps runner
   script:
-    - echo $CI_DEFAULT_BRANCH
-#    - apt-get update && apt-get install -y maven
-#    - mvn ${MAVEN_OPTS} -B clean test
+#    - echo $CI_DEFAULT_BRANCH
+    - apt-get update && apt-get install -y maven
+    - mvn ${MAVEN_OPTS} -B clean test
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
@@ -66,17 +66,16 @@ test-job:
   tags:
     - vps #tag to vps runner
   script:
-    - echo $CI_DEFAULT_BRANCH
-#    - apt-get update && apt-get install -y maven
-#    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
+    - apt-get update && apt-get install -y maven
+    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
     - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH
-#  artifacts:
-#    paths:
-#      - target/*.jar
-#    expire_in: 7 days
+  artifacts:
+    paths:
+      - target/*.jar
+    expire_in: 7 days
 
 build_docker_job:
   stage: release image
@@ -88,11 +87,10 @@ build_docker_job:
   extends:
     - .login_docker_hub
   script:
-    - echo "bonjour"
-#    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
-#    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
-#    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-#    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -128,12 +126,11 @@ deploy-job:
     - echo $DOCKER_ID
     - ssh $SSH_USER@$SSH_TARGET "docker stop $DOCKER_ID"
     - ssh $SSH_USER@$SSH_TARGET "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
-#    - ssh $SSH_USER@$SSH_TARGET "docker stop $(docker ps -a -q -f name=$DOCKER_NAME) || true"
-#    - ssh $SSH_USER@$SSH_TARGET "docker rm $(docker ps -a -q -f name=$DOCKER_NAME) || true"
     - ssh $SSH_USER@$SSH_TARGET "docker rm $DOCKER_ID || true"
     - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
     - IMAGE_ID=$(ssh $SSH_USER@$SSH_TARGET "docker image ls -q --format '{{.ID}}' $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG")
-    - ssh $SSH_USER@$SSH_TARGET "docker rmi $(docker image ls -q --format '{{.ID}}' $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG) || true"
+    - echo $IMAGE_ID
+    - ssh $SSH_USER@$SSH_TARGET "docker rmi $IMAGE_ID || true"
     - ssh $SSH_USER@$SSH_TARGET "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name $DOCKER_NAME -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   rules:
