@@ -126,7 +126,8 @@ deploy-job:
     - ssh $SSH_USER@$SSH_TARGET "docker ps"
     - ssh $SSH_USER@$SSH_TARGET "docker ps -a -q -f name=$DOCKER_NAME"
     - ssh $SSH_USER@$SSH_TARGET "docker ps -a -q -f name='$DOCKER_NAME'"
-    - ssh $SSH_USER@$SSH_TARGET "docker stop '$(docker ps -a -q -f name=$DOCKER_NAME)' || true"
+    - ssh $SSH_USER@$SSH_TARGET "docker stop $(docker ps -a -q -f name='$DOCKER_NAME')"
+    - ssh $SSH_USER@$SSH_TARGET docker stop $(docker ps -a -q -f name=gof-back)
     - ssh $SSH_USER@$SSH_TARGET "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
     - ssh $SSH_USER@$SSH_TARGET "docker stop $(docker ps -a -q -f name=$DOCKER_NAME) || true"
     - ssh $SSH_USER@$SSH_TARGET "docker rm $(docker ps -a -q -f name=$DOCKER_NAME) || true"
