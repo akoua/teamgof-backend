@@ -124,7 +124,7 @@ deploy-job:
     - chmod 644 ~/.ssh/known_hosts
     - ssh $SSH_USER@$SSH_TARGET "hostname"
     - ssh $SSH_USER@$SSH_TARGET "docker ps"
-    - DOCKER_ID = (ssh $SSH_USER@$SSH_TARGET "docker ps -a -q -f name=$DOCKER_NAME")
+    - DOCKER_ID=$(ssh $SSH_USER@$SSH_TARGET "docker ps -a -q -f name=$DOCKER_NAME")
     - echo $DOCKER_ID
     - ssh $SSH_USER@$SSH_TARGET "docker stop $DOCKER_ID"
     - ssh $SSH_USER@$SSH_TARGET "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
@@ -132,7 +132,7 @@ deploy-job:
 #    - ssh $SSH_USER@$SSH_TARGET "docker rm $(docker ps -a -q -f name=$DOCKER_NAME) || true"
     - ssh $SSH_USER@$SSH_TARGET "docker rm $DOCKER_ID || true"
     - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-    - IMAGE_ID = (ssh $SSH_USER@$SSH_TARGET "docker image ls -q --format '{{.ID}}' $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG")
+    - IMAGE_ID=$(ssh $SSH_USER@$SSH_TARGET "docker image ls -q --format '{{.ID}}' $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG")
     - ssh $SSH_USER@$SSH_TARGET "docker rmi $(docker image ls -q --format '{{.ID}}' $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG) || true"
     - ssh $SSH_USER@$SSH_TARGET "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name $DOCKER_NAME -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
