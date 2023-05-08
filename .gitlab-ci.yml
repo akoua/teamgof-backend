@@ -13,9 +13,9 @@ default:
 variables:
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dstyle.color=always"
 
-workflow:
-  rules:
-    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+#workflow:
+#  rules:
+#    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 
 cache:
   - key: cache_maven
@@ -54,6 +54,8 @@ build-job:
     - echo $CI_DEFAULT_BRANCH
     - apt-get update && apt-get install -y maven
     - mvn ${MAVEN_OPTS} -B clean test
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   except:
     changes:
       - "*.md" #you don't want to run pipeline if it's not contains changes in readme
@@ -68,6 +70,8 @@ test-job:
   script:
     - apt-get update && apt-get install -y maven
     - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
   artifacts:
     paths:
       - target/*.jar
