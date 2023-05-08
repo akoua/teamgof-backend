@@ -57,13 +57,11 @@ build-job:
     changes:
       - "*.md" #you don't want to run pipeline if it's not contains changes in readme
       - ".gitlab-ci.*"
-  artifacts:
-    paths:
-      - ${VARIABLES_FILE}
-    expire_in: 7 days
 
 test-job:
   stage: test
+  needs:
+    - build-job
   tags:
     - vps #tag to vps runner
   script:
