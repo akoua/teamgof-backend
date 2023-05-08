@@ -91,7 +91,7 @@ build_docker_job:
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   only:
-    - branches: $CI_DEFAULT_BRANCH
+    - $CI_DEFAULT_BRANCH
 
 deploy-job:
   stage: deploy
@@ -123,7 +123,7 @@ deploy-job:
     - ssh $SSH_USER@$SSH_TARGET "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name my_container -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   only:
-    - branches: $CI_DEFAULT_BRANCH
+    - $CI_DEFAULT_BRANCH
   #  rules:
 #    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
 #    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
