@@ -1,0 +1,9 @@
+**/.gitignore
+**/.vs
+**/.vscode
+./.mvn
+./.idea
+./.gitlab-ci.yml
+./.dockerignore
+./README.md
+./Dockerfile
