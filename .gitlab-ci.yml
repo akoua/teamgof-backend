@@ -96,8 +96,8 @@ build_docker_job:
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
     - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"
-#  only:
-#    - $CI_DEFAULT_BRANCH
+  only:
+    - $CI_DEFAULT_BRANCH
 
 deploy-job:
   stage: deploy
