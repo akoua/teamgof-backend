@@ -127,6 +127,8 @@ deploy-job:
     - ssh $SSH_USER@$SSH_TARGET "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
     - ssh $SSH_USER@$SSH_TARGET "docker stop $(docker ps -a -q -f name=$DOCKER_NAME) || true"
     - ssh $SSH_USER@$SSH_TARGET "docker rm $(docker ps -a -q -f name=$DOCKER_NAME) || true"
+    - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG)
+    - ssh $SSH_USER@$SSH_TARGET "docker rmi $(docker image ls -q --format '{{.ID}}' $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG) || true"
     - ssh $SSH_USER@$SSH_TARGET "docker run -d --name $DOCKER_NAME -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
