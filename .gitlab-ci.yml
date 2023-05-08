@@ -11,6 +11,7 @@ default:
   image: openjdk:17-slim
 
 variables:
+  DOCKER_NAME: gof-back
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dstyle.color=always"
 
 cache:
@@ -124,7 +125,9 @@ deploy-job:
     - ssh $SSH_USER@$SSH_TARGET "docker ps"
     - ssh $SSH_USER@$SSH_TARGET "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
     - ssh $SSH_USER@$SSH_TARGET "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-    - ssh $SSH_USER@$SSH_TARGET "docker run -d --name my_container -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
+    - ssh $SSH_USER@$SSH_TARGET "docker stop $(docker ps -a -q -f name=$DOCKER_NAME) || true"
+    - ssh $SSH_USER@$SSH_TARGET "docker rm $(docker ps -a -q -f name=$DOCKER_NAME) || true"
+    - ssh $SSH_USER@$SSH_TARGET "docker run -d --name $DOCKER_NAME -p 8081:8081 $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"
