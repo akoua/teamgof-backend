@@ -56,7 +56,7 @@ build-job:
   except:
     changes:
       - "*.md" #you don't want to run pipeline if it's not contains changes in readme
-      - ".gitlab-ci.*"
+#      - ".gitlab-ci.*"
 
 test-job:
   stage: test
