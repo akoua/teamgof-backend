@@ -52,10 +52,11 @@ build-job:
     - vps #tag to vps runner
   script:
     - echo $CI_DEFAULT_BRANCH
-    - apt-get update && apt-get install -y maven
-    - mvn ${MAVEN_OPTS} -B clean test
+#    - apt-get update && apt-get install -y maven
+#    - mvn ${MAVEN_OPTS} -B clean test
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == $CI_COMMIT_REF_SLUG
 #  except:
 #    changes:
 #      - "*.md" #you don't want to run pipeline if it's not contains changes in readme
@@ -68,14 +69,15 @@ test-job:
   tags:
     - vps #tag to vps runner
   script:
-    - apt-get update && apt-get install -y maven
-    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
+    - echo $CI_DEFAULT_BRANCH
+#    - apt-get update && apt-get install -y maven
+#    - mvn ${MAVEN_OPTS} -Drevision=x.y.z-SUFFIX -DskipTests -B clean install
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
-  artifacts:
-    paths:
-      - target/*.jar
-    expire_in: 7 days
+#  artifacts:
+#    paths:
+#      - target/*.jar
+#    expire_in: 7 days
 
 build_docker_job:
   stage: release image
@@ -87,14 +89,15 @@ build_docker_job:
   extends:
     - .login_docker_hub
   script:
-    - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-    - echo $CI_REGISTRY_IMAGE/$CI_PROJECT_TITLE:$CI_COMMIT_REF_SLUG
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
     - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  only:
-    - $CI_DEFAULT_BRANCH
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"
+#  only:
+#    - $CI_DEFAULT_BRANCH
 
 deploy-job:
   stage: deploy
