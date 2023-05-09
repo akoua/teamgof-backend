@@ -95,9 +95,9 @@ CREATE TABLE cavalier_epreuve_practice
 CREATE TABLE epreuve
 (
     epreuve_id         BIGINT                                    NOT NULL,
+    discipline_id      BIGINT,
     name               VARCHAR(255),
     qualification      JSONB,
-    discipline_id      BIGINT,
     created_by         VARCHAR(255),
     created_date       TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,
     last_modified_date TIMESTAMP WITHOUT TIME ZONE DEFAULT NOW() NOT NULL,

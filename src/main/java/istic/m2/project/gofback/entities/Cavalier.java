@@ -38,4 +38,18 @@ public class Cavalier extends Auditable<String>{
     @ManyToMany(targetEntity = Team.class, fetch = FetchType.LAZY, mappedBy = "cavaliersParticipated")
     private Set<Team> teamBelong;
 
+    @Override
+    public String toString() {
+        return "Cavalier{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", birthDate=" + birthDate +
+                ", location='" + location + '\'' +
+                ", niveau='" + niveau + '\'' +
+                ", poneys=" + poneys +
+                ", epreuveCavalierPractice=" + epreuveCavalierPractice +
+                ", epreuveCavalierParticipated=" + epreuveCavalierParticipated +
+                ", teamBelong=" + teamBelong +
+                '}';
+    }
 }

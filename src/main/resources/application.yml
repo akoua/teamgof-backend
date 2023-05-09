@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url:  jdbc:postgresql://localhost:5432/team_gof
+    url:  jdbc:postgresql://localhost:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
 #    url: jdbc:postgresql://194.163.158.136:5432/team_gof
     username: user
     password: root
@@ -18,8 +18,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-#        defaultSchema: ${DATASOURCE_DEFAULT_SCHEMA:gof_team}
-#        defaultCatalog: ${DATASOURCE_DEFAULT_SCHEMA:gof_team}
 
   flyway:
     baselineOnMigrate: true

@@ -26,6 +26,7 @@ public class Epreuve extends Auditable<String> {
     @JdbcTypeCode(SqlTypes.JSON)
     private Qualification qualification;
     @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "discipline_id")
     private Discipline discipline;
     @ManyToMany(targetEntity = Cavalier.class, fetch = FetchType.LAZY)
     @JoinTable(name = "cavalier_epreuve_practice",
@@ -42,6 +43,18 @@ public class Epreuve extends Auditable<String> {
     @ManyToMany(targetEntity = Team.class, fetch = FetchType.LAZY, mappedBy = "epreuvesParticipated")
     private Set<Team> teamBelong;
 
+    @Override
+    public String toString() {
+        return "Epreuve{" +
+                "name='" + name + '\'' +
+                ", qualification=" + qualification +
+                ", discipline=" + discipline +
+                ", cavaliersPracticeEpreuve=" + cavaliersPracticeEpreuve +
+                ", cavaliersEpreuveParticipated=" + cavaliersEpreuveParticipated +
+                ", teamBelong=" + teamBelong +
+                '}';
+    }
+
     @NoArgsConstructor
     @AllArgsConstructor
     @Getter
@@ -50,6 +63,14 @@ public class Epreuve extends Auditable<String> {
     public static class Qualification{
         private Integer qualificationCavalier;
         private Integer qualificationEquide;
+
+        @Override
+        public String toString() {
+            return "Qualification{" +
+                    "qualificationCavalier=" + qualificationCavalier +
+                    ", qualificationEquide=" + qualificationEquide +
+                    '}';
+        }
     }
 }
 
