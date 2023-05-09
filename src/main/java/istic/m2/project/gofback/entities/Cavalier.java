@@ -22,6 +22,10 @@ public class Cavalier extends Auditable<String>{
     private String lastName;
     @Column(name = "birth_date")
     private Date birthDate;
+    @Column(nullable = false)
+    private String email;
+    @Column(nullable = false)
+    private String pwd;
 
     private String location;
     private String niveau;
