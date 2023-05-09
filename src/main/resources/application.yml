@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    url:  jdbc:postgresql://localhost:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
-#    url:  jdbc:postgresql://194.163.158.136:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
+#    url:  jdbc:postgresql://localhost:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
+    url:  jdbc:postgresql://194.163.158.136:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
     username: user
     password: root
     type: com.zaxxer.hikari.HikariDataSource
