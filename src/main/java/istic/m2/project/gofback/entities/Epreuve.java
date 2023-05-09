@@ -9,6 +9,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.type.SqlTypes;
 import org.hibernate.type.descriptor.jdbc.JsonJdbcType;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,12 +22,11 @@ import java.util.Set;
 public class Epreuve extends Auditable<String> {
 
     private String name;
-
     @Column
     @JdbcTypeCode(SqlTypes.JSON)
     private Qualification qualification;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "discipline_id")
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "discipline_id", nullable = false)
     private Discipline discipline;
     @ManyToMany(targetEntity = Cavalier.class, fetch = FetchType.LAZY)
     @JoinTable(name = "cavalier_epreuve_practice",

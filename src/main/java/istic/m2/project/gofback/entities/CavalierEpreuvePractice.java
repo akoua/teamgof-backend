@@ -2,6 +2,8 @@ package istic.m2.project.gofback.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * This class represent the join table between {@link Cavalier} and {@link Epreuve} which
@@ -18,16 +20,14 @@ import lombok.*;
 public class CavalierEpreuvePractice extends Auditable<String> {
 
     @ManyToOne
-    @JoinColumn(name = "cavalier_id")
+    @JoinColumn(name = "cavalier_id", nullable = false)
     private Cavalier cavalier;
 
     @ManyToOne
-    @JoinColumn(name = "epreuve_id")
+    @JoinColumn(name = "epreuve_id", nullable = false)
     private Epreuve epreuve;
 
-    @Column(name = "cavalier_qualification")
-    private Double cavalierQualification;
-
-    @Column(name = "equidé_qualification")
-    private Double equideQualification;
+    @Column(nullable = false)
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Epreuve.Qualification qualification;
 }

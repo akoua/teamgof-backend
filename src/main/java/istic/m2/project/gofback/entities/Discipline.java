@@ -18,6 +18,11 @@ public class Discipline extends Auditable<String> {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "discipline", orphanRemoval = true)
     private List<Epreuve> epreuves;
 
+    public void setEpreuves(List<Epreuve> epreuves) {
+        this.epreuves = epreuves;
+        epreuves.forEach(e -> e.setDiscipline(this));
+    }
+
     @Override
     public String toString() {
         return "Discipline{" +

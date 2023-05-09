@@ -6,6 +6,7 @@ import istic.m2.project.gofback.repositories.DisciplineRepository;
 import istic.m2.project.gofback.repositories.EpreuveRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,14 +30,19 @@ public class TestController {
 
     @PostMapping
     public ResponseEntity<String> addTest(){
+
+
+
         var epreuve = new Epreuve()
-                .withName("Club Elite GP Paire")
+                .withName("ClubHGDGD")
                 .withQualification(new Epreuve.Qualification()
                         .withQualificationCavalier(15)
                         .withQualificationEquide(20));
+
         var discipline = new Discipline()
-                .withName("Attelage")
-                .withEpreuves(List.of(epreuve));
+                .withName("Attelage");
+        discipline.setEpreuves(List.of(epreuve));
+
         disciplineRepository.save(discipline);
         return ResponseEntity.ok("Test deploy New");
     }
