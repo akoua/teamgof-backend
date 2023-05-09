@@ -11,8 +11,8 @@ import lombok.*;
 @Setter
 @AttributeOverride(name = "id", column = @Column(name = "poney_id"))
 public class Poney extends Auditable<String> {
-
+    private String name;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "cavalier_id")
+    @JoinColumn(name = "cavalier_id", nullable = false)
     private Cavalier cavalier;
 }

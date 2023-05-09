@@ -18,11 +18,11 @@ import lombok.*;
 public class EpreuveTeamParticipated extends Auditable<String> {
 
     @ManyToOne
-    @JoinColumn(name = "epreuve_id")
+    @JoinColumn(name = "epreuve_id", nullable = false)
     private Epreuve epreuve;
 
     @ManyToOne
-    @JoinColumn(name = "team_id")
+    @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
 }
