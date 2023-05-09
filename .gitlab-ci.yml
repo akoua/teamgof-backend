@@ -128,7 +128,7 @@ deploy-job:
     - ssh $SSH_USER@$SSH_TARGET "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
     - ssh $SSH_USER@$SSH_TARGET "docker rm $DOCKER_ID || true"
     - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-    - IMAGE_ID=$(ssh $SSH_USER@$SSH_TARGET "docker image ls -q --format '{{.ID}}' $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG")
+    - IMAGE_ID=$(ssh $SSH_USER@$SSH_TARGET "docker image ls -q --filter 'reference=$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'")
     - echo $IMAGE_ID
     - ssh $SSH_USER@$SSH_TARGET "docker rmi $IMAGE_ID || true"
     - ssh $SSH_USER@$SSH_TARGET "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
