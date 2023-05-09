@@ -19,7 +19,7 @@ import java.util.Date;
 @Setter
 public class Auditable<U> implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "native")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "increment")
     private Long id;
     @CreatedBy

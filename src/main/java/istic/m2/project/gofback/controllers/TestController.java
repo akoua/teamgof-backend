@@ -23,7 +23,7 @@ public class TestController {
     private final EpreuveRepository epreuveRepository;
     @GetMapping
     public ResponseEntity<String> getTest(){
-        var epreuve = epreuveRepository.getReferenceById((long) 1);
+        var epreuve = epreuveRepository.getReferenceById(1L);
         var discipline = disciplineRepository.getReferenceById(1L);
         return ResponseEntity.ok(String.format("discipline: %s \n epreuve: %s", discipline, epreuve));
     }
