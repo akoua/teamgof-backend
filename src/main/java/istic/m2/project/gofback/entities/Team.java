@@ -1,9 +1,9 @@
 package istic.m2.project.gofback.entities;
 
+import istic.m2.project.gofback.entities.enums.TypeMotivation;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -14,6 +14,13 @@ import java.util.Set;
 @AllArgsConstructor
 @AttributeOverride(name = "id", column = @Column(name = "team_id"))
 public class Team extends Auditable<String> {
+
+    private String name;
+
+    @Enumerated(EnumType.STRING)
+    private TypeMotivation motivation;
+
+//    private Departement location;
 
     @ManyToMany(targetEntity = Cavalier.class, fetch = FetchType.LAZY)
     @JoinTable(name = "cavalier_team_participated",

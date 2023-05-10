@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+    <!--    must be first because, if it's not appenders can be pluggeable the property-->
+    <Properties>
+        <Property name="LOG_PATTERN">
+            %d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${hostname} --- [%5.5t] - %X{dd.trace_id} %X{dd.span_id} - %-5.40c{1.} :
+            %m%n%ex
+        </Property>
+        <Property name="LOCAL_LOG_PATTERN">
+            %d{ISO8601} [%t] %-5p %c{1} - %m%n
+        </Property>
+    </Properties>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOCAL_LOG_PATTERN}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

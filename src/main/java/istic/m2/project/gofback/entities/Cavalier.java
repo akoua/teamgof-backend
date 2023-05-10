@@ -8,13 +8,13 @@ import java.util.List;
 import java.util.Set;
 
 @Entity
-@AttributeOverride(name = "id", column = @Column(name = "cavalier_id"))
 @NoArgsConstructor
 @AllArgsConstructor
 @With
 @Getter
 @Setter
-public class Cavalier extends Auditable<String>{
+@AttributeOverride(name = "id", column = @Column(name = "cavalier_id"))
+public class Cavalier extends Auditable<String> {
 
     @Column(name = "first_name")
     private String firstName;
@@ -22,14 +22,16 @@ public class Cavalier extends Auditable<String>{
     private String lastName;
     @Column(name = "birth_date")
     private Date birthDate;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
     private String pwd;
 
+    @Column(name = "number_ffe")
+    private String numberFfe;
+    private String description;
     private String location;
     private String niveau;
-
     @OneToMany(targetEntity = Poney.class, mappedBy = "cavalier", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Poney> poneys;
 

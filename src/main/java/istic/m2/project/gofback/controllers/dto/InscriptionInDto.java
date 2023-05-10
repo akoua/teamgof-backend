@@ -1,8 +1,8 @@
-package istic.m2.project.gofback.controllers;
+package istic.m2.project.gofback.controllers.dto;
 
 import java.util.List;
 
-public class inscriptionInDto {
+public class InscriptionInDto {
     private String firstname;
     private String lastname;
     private List<epreuveInscription> epreuve;
