@@ -1,6 +1,6 @@
 package istic.m2.project.gofback.servicies;
 
-import istic.m2.project.gofback.controllers.inscriptionInDto;
+import istic.m2.project.gofback.controllers.dto.inscriptionInDto;
 import istic.m2.project.gofback.entities.Cavalier;
 import istic.m2.project.gofback.entities.CavalierEpreuvePractice;
 import istic.m2.project.gofback.entities.Epreuve;
@@ -25,7 +25,6 @@ public class LoginService {
 
         List<CavalierEpreuvePractice> cavalierEpreuvePractices = new ArrayList<>();
 
-        //Vérifier que les champs requis sont remplis
         final List<Integer> listOfIdEpreuve = value.getEpreuve().stream()
                 .map(inscriptionInDto.epreuveInscription::getChampionshipId)
                 .toList();

@@ -1,4 +1,4 @@
-package istic.m2.project.gofback.controllers;
+package istic.m2.project.gofback.controllers.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.controllers;
 
+import istic.m2.project.gofback.controllers.dto.inscriptionInDto;
 import istic.m2.project.gofback.servicies.LoginService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
