@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @AttributeOverride(name = "id", column = @Column(name = "poney_id"))
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Poney extends Auditable<String> {
     private String name;
 

@@ -43,11 +43,11 @@ public class ProjectSecurity {
                 }).and()
                 .authorizeHttpRequests()
                 .requestMatchers(new AntPathRequestMatcher("/v1/api/cavalier/**"),
-                        new AntPathRequestMatcher("/v1/api/token/**"),
                         new AntPathRequestMatcher("/v1/api/login/sign-in"))
                 .authenticated().and()
                 .authorizeHttpRequests()
-                .requestMatchers(new AntPathRequestMatcher("/v1/api/login/sign-up"))
+                .requestMatchers(new AntPathRequestMatcher("/v1/api/login/sign-up"),
+                        new AntPathRequestMatcher("/v1/api/token/**"))
                 .permitAll()
                 .and()
                 .addFilterBefore(new JwtTokenValidatorFilter(securityConfig, refreshJwtTokenService), BasicAuthenticationFilter.class)

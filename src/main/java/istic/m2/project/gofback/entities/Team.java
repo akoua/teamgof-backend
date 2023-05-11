@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import istic.m2.project.gofback.entities.enums.TypeMotivation;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @AttributeOverride(name = "id", column = @Column(name = "team_id"))
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Team extends Auditable<String> {
 
     private String name;

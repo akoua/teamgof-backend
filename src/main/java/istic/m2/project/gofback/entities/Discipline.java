@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @AttributeOverride(name = "id", column = @Column(name = "discipline_id"))
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Discipline extends Auditable<String> {
 
     private String name;

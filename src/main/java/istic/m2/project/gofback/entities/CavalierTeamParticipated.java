@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,6 +16,7 @@ import lombok.*;
 @Setter
 @AttributeOverride(name = "id", column = @Column(name = "cavalier_team_participated_id"))
 @Table(name = "cavalier_team_participated")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CavalierTeamParticipated extends Auditable<String> {
 
     @ManyToOne
