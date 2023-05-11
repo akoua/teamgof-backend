@@ -4,17 +4,20 @@ server:
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-#    url:  jdbc:postgresql://localhost:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
-    url:  jdbc:postgresql://194.163.158.136:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
+    #    url: jdbc:postgresql://localhost:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
+    url: jdbc:postgresql://194.163.158.136:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
     username: user
     password: root
     type: com.zaxxer.hikari.HikariDataSource
+  data:
+    rest:
+      detectionStrategy: ANNOTATED
   jpa:
     showSql: true
     generateDdl: false
     databasePlatform: org.hibernate.dialect.PostgreSQLDialect
-#    hibernate:
-#      ddlAuto: update
+    #    hibernate:
+    #      ddlAuto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
@@ -23,3 +26,26 @@ spring:
     baselineOnMigrate: true
     schemas: ${DATASOURCE_DEFAULT_SCHEMA:gof_team}
     outOfOrder: true
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    disableSwaggerDefaultUrl: true
+    #  showLoginEndpoint: false
+    path: /swagger-ui.html
+  apiDocs:
+    path: /v3/api-docs
+
+security:
+  jwt:
+    jwt-key: ${JWT_KEY:eBDS4949a2c1d8a3501fefcfd7ff6c15f0ff35d8946b46d6f7f9bd06aa50f8bb70DRSFGQHQHJJQKKAKKAIIIAIAIIAIAIAI}
+    issuer: ${JWT_ISSUER:Gof Team}
+    expiration-time: ${JWT_EXPIRATION_TIME:60}
+    header: Authorization
+    header-refresh: RefreshToken
+    refresh-token-expiration-time: ${JWT_REFRESH_TOKEN_EXPIRATION_TIME:7200}

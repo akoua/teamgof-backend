@@ -2,9 +2,9 @@ stages:
   - build
   - test
   - release image
-#  - scan image
-#  - slim image
-#  - staging
+  #  - scan image
+  #  - slim image
+  #  - staging
   - deploy
 
 default:
@@ -46,8 +46,10 @@ build-job:
   stage: build
   tags:
     - vps #tag to vps runner
+  #  services:
+  #    - postgres
   script:
-#    - echo $CI_DEFAULT_BRANCH
+    #    - echo $CI_DEFAULT_BRANCH
     - apt-get update && apt-get install -y maven
     - mvn ${MAVEN_OPTS} -B clean test
   rules:
