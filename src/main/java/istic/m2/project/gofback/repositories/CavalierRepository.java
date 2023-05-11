@@ -8,6 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface CavalierRepository extends JpaRepository<Cavalier, Long> {
-
     Optional<Cavalier> findCavalierByEmail(String email);
 }

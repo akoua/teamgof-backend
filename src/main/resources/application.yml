@@ -9,6 +9,9 @@ spring:
     username: user
     password: root
     type: com.zaxxer.hikari.HikariDataSource
+  data:
+    rest:
+      detectionStrategy: ANNOTATED
   jpa:
     showSql: true
     generateDdl: false
@@ -28,6 +31,15 @@ logging:
   level:
     org.springframework.security: DEBUG
     org.springframework.security.web.FilterChainProxy: DEBUG
+
+springdoc:
+  swagger-ui:
+    enabled: true
+    disableSwaggerDefaultUrl: true
+    #  showLoginEndpoint: false
+    path: /swagger-ui.html
+  apiDocs:
+    path: /v3/api-docs
 
 security:
   jwt:
