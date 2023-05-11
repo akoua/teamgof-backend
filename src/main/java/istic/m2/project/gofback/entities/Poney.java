@@ -17,4 +17,11 @@ public class Poney extends Auditable<String> {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cavalier_id", nullable = false)
     private Cavalier cavalier;
+
+    @Override
+    public String toString() {
+        return "Poney{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

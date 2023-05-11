@@ -1,5 +1,7 @@
 package istic.m2.project.gofback.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,6 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @AttributeOverride(name = "id", column = @Column(name = "cavalier_id"))
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Cavalier extends Auditable<String> {
 
     @Column(name = "first_name")
@@ -25,6 +28,7 @@ public class Cavalier extends Auditable<String> {
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String pwd;
 
     @Column(name = "number_ffe")

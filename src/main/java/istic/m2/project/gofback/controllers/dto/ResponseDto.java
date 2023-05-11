@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ResponseDto<T extends Serializable> implements Serializable {
 
+    @Getter
     private T data;
     private boolean success = true;
     private MessageDto error = null;

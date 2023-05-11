@@ -40,7 +40,7 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
         if (null != token) {
             String jwt = parseJwt(request);
             SecretKey key = Keys.hmacShaKeyFor(securityConfig.getJwt().getJwtKey().getBytes(StandardCharsets.UTF_8));
-            if (null != jwt && validateJwtToken(jwt, key)) {
+            if (null != jwt && validateJwtToken(jwt, key, request)) {
 
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(key)
@@ -53,14 +53,28 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
                                 null,
                                 null));
             }
+            //TODO faire generer un nouvel token
 //            else {
 //                //we generate a new jwt token
 //                log.info(String.format("token %s is expired", jwt));
 //                var refreshToken = request.getHeader(securityConfig.getJwt().getHeaderRefresh());
 //                try {
 //                    TokenRefreshOutDto tokenRefreshOutDto = refreshJwtTokenService.refreshToken(refreshToken);
-//                    response.setStatus(HttpStatus.I_AM_A_TEAPOT.value());
-//                    response.setHeader("token", tokenRefreshOutDto.toString());
+////
+////                    // Ajouter un en-tête personnalisé à la requête
+////                    HttpServletRequestWrapper requestWrapper = new HttpServletRequestWrapper(request);
+////                    response.setHeader(securityConfig.getJwt().getHeader(), tokenRefreshOutDto.accessToken());
+////                    request.setHeader(securityConfig.getJwt().getHeaderRefresh(), tokenRefreshOutDto.refreshToken());
+//                    request.setAttribute("jwt_expired", true);
+//
+////                    SecurityContextHolder.getContext().setAuthentication(
+////                            new UsernamePasswordAuthenticationToken(,
+////                                    null,
+////                                    null));
+////                    response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
+////                    response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+////                    response.getWriter().write(tokenRefreshOutDto.toString());
+////                    response.setHeader("token", tokenRefreshOutDto.toString());
 //                } catch (BusinessException e) {
 //                    log.error(String.format("token %s can be refresh", refreshToken), e);
 //                }
@@ -86,7 +100,7 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
     /**
      * Allow to validate the jwt token
      */
-    private boolean validateJwtToken(String jwt, SecretKey jwtSecret) {
+    private boolean validateJwtToken(String jwt, SecretKey jwtSecret, HttpServletRequest request) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(jwtSecret)
@@ -99,6 +113,11 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
             log.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
             log.error("JWT token is expired: {}", e.getMessage());
+//            SecurityContextHolder.getContext().setAuthentication(
+//                    new UsernamePasswordAuthenticationToken(String.valueOf(e.getClaims().get("email")),
+//                            null,
+//                            null));
+
         } catch (UnsupportedJwtException e) {
             log.error("JWT token is unsupported: {}", e.getMessage());
         } catch (IllegalArgumentException e) {
