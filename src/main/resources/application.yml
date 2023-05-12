@@ -4,8 +4,8 @@ server:
 spring:
   datasource:
     driverClassName: org.postgresql.Driver
-    #    url: jdbc:postgresql://localhost:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
-    url: jdbc:postgresql://194.163.158.136:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
+    url: jdbc:postgresql://localhost:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
+    #    url: jdbc:postgresql://194.163.158.136:5432/team_gof?currentSchema=${DATASOURCE_DEFAULT_SCHEMA:gof_team}
     username: user
     password: root
     type: com.zaxxer.hikari.HikariDataSource
@@ -15,6 +15,7 @@ spring:
   jpa:
     showSql: true
     generateDdl: false
+    openInView: false
     databasePlatform: org.hibernate.dialect.PostgreSQLDialect
     #    hibernate:
     #      ddlAuto: update
@@ -45,7 +46,7 @@ security:
   jwt:
     jwt-key: ${JWT_KEY:eBDS4949a2c1d8a3501fefcfd7ff6c15f0ff35d8946b46d6f7f9bd06aa50f8bb70DRSFGQHQHJJQKKAKKAIIIAIAIIAIAIAI}
     issuer: ${JWT_ISSUER:Gof Team}
-    expiration-time: ${JWT_EXPIRATION_TIME:60}
+    expiration-time: ${JWT_EXPIRATION_TIME:3600}
     header: Authorization
     header-refresh: RefreshToken
     refresh-token-expiration-time: ${JWT_REFRESH_TOKEN_EXPIRATION_TIME:7200}

@@ -21,9 +21,8 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping(path = "sign-up")
-    public ResponseEntity<String> inscription(@RequestBody InscriptionInDto value) {
-        String response = loginService.inscriptionService(value);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<ResponseDto<String>> inscription(@RequestBody InscriptionInDto value) {
+        return ResponseEntity.ok(new ResponseDto<>(loginService.inscriptionService(value)));
     }
 
     @PostMapping(path = "sign-in")

@@ -2,7 +2,8 @@ package istic.m2.project.gofback.controllers;
 
 import istic.m2.project.gofback.controllers.dto.ResponseDto;
 import istic.m2.project.gofback.entities.Cavalier;
-import istic.m2.project.gofback.repositories.CavalierRepository;
+import istic.m2.project.gofback.exceptions.BusinessException;
+import istic.m2.project.gofback.services.CavalierService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
@@ -17,15 +18,14 @@ import java.time.Duration;
 @RequestMapping(path = "/v1/api/cavalier")
 @RequiredArgsConstructor
 public class CavalierController {
-    private final CavalierRepository cavalierRepository;
+    private final CavalierService cavalierService;
 
     @GetMapping("infos/{id}")
-    public ResponseEntity<ResponseDto<Cavalier>> getCavalierInfos(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<Cavalier>> getCavalierInfos(@PathVariable Long id) throws BusinessException {
 
-        var cavalier = cavalierRepository.getReferenceById(id);
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(Duration.ofSeconds(60)))
-                .body(new ResponseDto<>(cavalier));
+                .body(new ResponseDto<>(cavalierService.findUserById(id)));
     }
 
 }

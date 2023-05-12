@@ -42,8 +42,8 @@ public class Cavalier extends Auditable<String> {
     @ManyToMany(targetEntity = Epreuve.class, fetch = FetchType.LAZY, mappedBy = "cavaliersPracticeEpreuve")
     private Set<Epreuve> epreuveCavalierPractice;
 
-    @ManyToMany(targetEntity = Epreuve.class, fetch = FetchType.LAZY, mappedBy = "cavaliersEpreuveParticipated")
-    private Set<Epreuve> epreuveCavalierParticipated;
+//    @ManyToMany(targetEntity = Epreuve.class, fetch = FetchType.LAZY, mappedBy = "cavaliersEpreuveParticipated")
+//    private Set<Epreuve> epreuveCavalierParticipated;
 
     @ManyToMany(targetEntity = Team.class, fetch = FetchType.LAZY, mappedBy = "cavaliersParticipated")
     private Set<Team> teamBelong;
@@ -54,11 +54,13 @@ public class Cavalier extends Auditable<String> {
                 "firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", birthDate=" + birthDate +
+                ", email='" + email + '\'' +
+                ", pwd='" + pwd + '\'' +
+                ", numberFfe='" + numberFfe + '\'' +
+                ", description='" + description + '\'' +
                 ", location='" + location + '\'' +
                 ", niveau='" + niveau + '\'' +
-                ", poneys=" + poneys +
                 ", epreuveCavalierPractice=" + epreuveCavalierPractice +
-                ", epreuveCavalierParticipated=" + epreuveCavalierParticipated +
                 ", teamBelong=" + teamBelong +
                 '}';
     }

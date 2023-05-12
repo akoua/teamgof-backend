@@ -3,8 +3,6 @@ package istic.m2.project.gofback.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 /**
  * This class represent the join table between {@link Cavalier} and {@link Epreuve} which
@@ -29,7 +27,6 @@ public class CavalierEpreuvePractice extends Auditable<String> {
     @JoinColumn(name = "epreuve_id", nullable = false)
     private Epreuve epreuve;
 
-    @Column(nullable = false)
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Epreuve.Qualification qualification;
+    @Column(name = "qualification_cavalier", nullable = false)
+    private Integer qualificationCavalier;
 }
