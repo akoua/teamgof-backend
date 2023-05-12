@@ -12,6 +12,7 @@ default:
 
 variables:
   DOCKER_NAME: gof-back
+  IMAGE_REPO: alexakoua/ci_cd:main
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository -Dstyle.color=always"
 
 cache:
@@ -130,7 +131,8 @@ deploy-job:
     - ssh $SSH_USER@$SSH_TARGET "echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY"
     - ssh $SSH_USER@$SSH_TARGET "docker rm $DOCKER_ID || true"
     - echo $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-    - IMAGE_ID=$(ssh $SSH_USER@$SSH_TARGET "docker image ls -q --filter 'reference=$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG'")
+    - echo $IMAGE_REPO
+    - IMAGE_ID=$(ssh $SSH_USER@$SSH_TARGET "docker image ls -q --filter 'reference=$IMAGE_REPO'")
     - echo $IMAGE_ID
     - ssh $SSH_USER@$SSH_TARGET "docker rmi $IMAGE_ID || true"
     - ssh $SSH_USER@$SSH_TARGET "docker pull $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
