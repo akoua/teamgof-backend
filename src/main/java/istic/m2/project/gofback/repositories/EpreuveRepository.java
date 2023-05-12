@@ -3,7 +3,6 @@ package istic.m2.project.gofback.repositories;
 import istic.m2.project.gofback.entities.Epreuve;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -11,7 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Repository
-@RepositoryRestResource()
+//@RepositoryRestResource()
 public interface EpreuveRepository extends JpaRepository<Epreuve, Long> {
 
     @Query(value = "SELECT e FROM Epreuve e WHERE e.id in (:ids)")

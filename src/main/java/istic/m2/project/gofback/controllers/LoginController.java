@@ -21,7 +21,7 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping(path = "sign-up")
-    public ResponseEntity<ResponseDto<String>> inscription(@RequestBody InscriptionInDto value) {
+    public ResponseEntity<ResponseDto<String>> inscription(@RequestBody InscriptionInDto value) throws BusinessException {
         return ResponseEntity.ok(new ResponseDto<>(loginService.inscriptionService(value)));
     }
 

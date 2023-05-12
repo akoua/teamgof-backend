@@ -7,6 +7,8 @@ import istic.m2.project.gofback.entities.Cavalier;
 import istic.m2.project.gofback.entities.CavalierEpreuvePractice;
 import istic.m2.project.gofback.entities.Epreuve;
 import istic.m2.project.gofback.exceptions.BusinessException;
+import istic.m2.project.gofback.exceptions.ErrorUtils;
+import istic.m2.project.gofback.exceptions.MessageError;
 import istic.m2.project.gofback.repositories.CavalierEpreuvePracticeRepository;
 import istic.m2.project.gofback.repositories.CavalierRepository;
 import istic.m2.project.gofback.repositories.EpreuveRepository;
@@ -37,7 +39,7 @@ public class LoginService {
      * Allow to sign-up the cavalier
      */
     @Transactional
-    public String inscriptionService(InscriptionInDto inscriptionInDto) {
+    public String inscriptionService(InscriptionInDto inscriptionInDto) throws BusinessException {
 
         List<CavalierEpreuvePractice> cavalierEpreuvePractices = new ArrayList<>();
 
@@ -47,7 +49,7 @@ public class LoginService {
                 .toList();
 
         Set<Epreuve> allEpreuveIn = epreuveRepository.findAllEpreuveIn(listOfIdEpreuve)
-                .orElseThrow();
+                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", listOfIdEpreuve)));
 
         Cavalier cavalier = new Cavalier()
                 .withFirstName(inscriptionInDto.getFirstname())

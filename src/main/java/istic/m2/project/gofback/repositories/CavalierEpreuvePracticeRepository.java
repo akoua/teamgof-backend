@@ -4,6 +4,7 @@ import istic.m2.project.gofback.entities.CavalierEpreuvePractice;
 import istic.m2.project.gofback.repositories.dto.CavalierInfosProjectionDto;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +18,10 @@ public interface CavalierEpreuvePracticeRepository extends JpaRepository<Cavalie
     @Query("SELECT new istic.m2.project.gofback.repositories.dto.CavalierInfosProjectionDto(c.id, c.firstName, c.lastName, c.birthDate, c.email, c.numberFfe, c.description, c.location, c.niveau, cev.qualificationCavalier, cev.epreuve.name) from Cavalier c JOIN CavalierEpreuvePractice cev on cev.cavalier.id = c.id " +
             "WHERE c.id = :id ")
     Optional<List<CavalierInfosProjectionDto>> findCavalierByIdAndEpreuvePractice(Long id);
+
+    @Modifying
+    @Query("update CavalierEpreuvePractice c SET c.qualificationCavalier = :newValue WHERE c.id = :id ")
+    void updateCavalierEpreuvePractice(Long id, Integer newValue);
+
+    int deleteAllByCavalierId(Long id);
 }
