@@ -16,7 +16,7 @@ public class Poney extends Auditable<String> {
     private String name;
 
     //    private String numberCir;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cavalier_id", nullable = false)
     private Cavalier cavalier;
 

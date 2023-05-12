@@ -1,7 +1,7 @@
 package istic.m2.project.gofback.controllers;
 
+import istic.m2.project.gofback.controllers.dto.CavalierOwnInfosDtoOut;
 import istic.m2.project.gofback.controllers.dto.ResponseDto;
-import istic.m2.project.gofback.entities.Cavalier;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.services.CavalierService;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class CavalierController {
     private final CavalierService cavalierService;
 
     @GetMapping("infos/{id}")
-    public ResponseEntity<ResponseDto<Cavalier>> getCavalierInfos(@PathVariable Long id) throws BusinessException {
+    public ResponseEntity<ResponseDto<CavalierOwnInfosDtoOut>> getCavalierInfos(@PathVariable Long id) throws BusinessException {
 
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(Duration.ofSeconds(60)))

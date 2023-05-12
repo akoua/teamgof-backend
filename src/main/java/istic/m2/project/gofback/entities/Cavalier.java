@@ -60,8 +60,6 @@ public class Cavalier extends Auditable<String> {
                 ", description='" + description + '\'' +
                 ", location='" + location + '\'' +
                 ", niveau='" + niveau + '\'' +
-                ", epreuveCavalierPractice=" + epreuveCavalierPractice +
-                ", teamBelong=" + teamBelong +
                 '}';
     }
 }

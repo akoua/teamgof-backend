@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class LoginService {
     /**
      * Allow to sign-up the cavalier
      */
+    @Transactional
     public String inscriptionService(InscriptionInDto inscriptionInDto) {
 
         List<CavalierEpreuvePractice> cavalierEpreuvePractices = new ArrayList<>();
@@ -43,32 +45,31 @@ public class LoginService {
         final List<Long> listOfIdEpreuve = inscriptionInDto.getEpreuves().stream()
                 .map(InscriptionInDto.ChampionShipInscription::getChampionshipId)
                 .toList();
+
         Set<Epreuve> allEpreuveIn = epreuveRepository.findAllEpreuveIn(listOfIdEpreuve)
                 .orElseThrow();
-        if (!allEpreuveIn.isEmpty()) {
-            Cavalier cavalier = new Cavalier()
-                    .withFirstName(inscriptionInDto.getFirstname())
-                    .withLastName(inscriptionInDto.getLastname())
-                    .withEmail(inscriptionInDto.getEmail())
-                    .withPwd(passwordEncoder.encode(inscriptionInDto.getPwd()))
-                    .withEpreuveCavalierPractice(allEpreuveIn);
 
-            allEpreuveIn
-                    .forEach(e -> inscriptionInDto.getEpreuves().stream()
-                            .filter(epreuveIns -> epreuveIns.getChampionshipId().equals(e.getId()))
-                            .forEach(epreuveIns -> cavalierEpreuvePractices.add(new CavalierEpreuvePractice()
-                                    .withCavalier(cavalier)
-                                    .withEpreuve(e)
-                                    .withQualificationCavalier(epreuveIns.getRiderScore())
-                            )));
+        Cavalier cavalier = new Cavalier()
+                .withFirstName(inscriptionInDto.getFirstname())
+                .withLastName(inscriptionInDto.getLastname())
+                .withEmail(inscriptionInDto.getEmail())
+                .withPwd(passwordEncoder.encode(inscriptionInDto.getPwd()))
+                .withEpreuveCavalierPractice(allEpreuveIn);
 
-            cavalierRepository.save(cavalier);
-            cavalierEpreuvePracticeRepository.saveAll(cavalierEpreuvePractices);
+        Cavalier finalCavalier = cavalier;
+        allEpreuveIn
+                .forEach(e -> inscriptionInDto.getEpreuves().stream()
+                        .filter(epreuveIns -> epreuveIns.getChampionshipId().equals(e.getId()))
+                        .forEach(epreuveIns -> cavalierEpreuvePractices.add(new CavalierEpreuvePractice()
+                                .withCavalier(finalCavalier)
+                                .withEpreuve(e)
+                                .withQualificationCavalier(epreuveIns.getRiderScore())
+                        )));
 
-        }
+        cavalier = cavalierRepository.save(cavalier);
+        cavalierEpreuvePracticeRepository.saveAll(cavalierEpreuvePractices);
 
-
-        return "test";
+        return cavalier.getId().toString();
     }
 
     /**
