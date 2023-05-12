@@ -42,6 +42,8 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
             SecretKey key = Keys.hmacShaKeyFor(securityConfig.getJwt().getJwtKey().getBytes(StandardCharsets.UTF_8));
             if (null != jwt && validateJwtToken(jwt, key, request)) {
 
+                //TODO il faut vérifier que l'email dans le jwt est vraiment celui auquel on s'attend pour éviter
+                // qu'un token d'un utilisateur X soit utilisé par un utilisateur Y
                 Claims claims = Jwts.parserBuilder()
                         .setSigningKey(key)
                         .build()

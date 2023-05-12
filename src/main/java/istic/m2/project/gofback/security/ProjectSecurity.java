@@ -1,6 +1,7 @@
 package istic.m2.project.gofback.security;
 
 import istic.m2.project.gofback.config.SecurityConfig;
+import istic.m2.project.gofback.security.filter.JwtTokenValidatorFilter;
 import istic.m2.project.gofback.services.RefreshJwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -41,18 +43,22 @@ public class ProjectSecurity {
                 }).and()
                 .authorizeHttpRequests()
                 .requestMatchers(new AntPathRequestMatcher("/v1/api/cavalier/**"),
-                        new AntPathRequestMatcher("/v1/api/login/sign-in"))
+                        new AntPathRequestMatcher("/v1/api/login/sign-in/**"))
                 .authenticated().and()
                 .authorizeHttpRequests()
-                .requestMatchers(new AntPathRequestMatcher("/v1/api/login/sign-up"),
+                .requestMatchers(new AntPathRequestMatcher("/v1/api/login/sign-up/**"),
                         new AntPathRequestMatcher("/v1/api/token/**"),
                         new AntPathRequestMatcher("/v3/api-docs/**"),
                         new AntPathRequestMatcher("/swagger-ui.html"),
-                        new AntPathRequestMatcher("/swagger-ui/**")
+                        new AntPathRequestMatcher("/swagger-ui/**"),
+                        new AntPathRequestMatcher("/disciplines/**"),
+                        new AntPathRequestMatcher("/epreuves/**"),
+                        //TODO must change
+                        new AntPathRequestMatcher("/v1/api/epreuves/add/**")
                 )
                 .permitAll()
                 .and()
-//                .addFilterBefore(new JwtTokenValidatorFilter(securityConfig, refreshJwtTokenService), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidatorFilter(securityConfig, refreshJwtTokenService), BasicAuthenticationFilter.class)
                 .httpBasic()
                 .and()
                 .build();

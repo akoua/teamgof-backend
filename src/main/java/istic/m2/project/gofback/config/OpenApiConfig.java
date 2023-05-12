@@ -11,8 +11,8 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI usersMicroserviceOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("Your API Title")
-                        .description("Your API Description")
+                .info(new Info().title("Team Gof Swagger")
+                        .description("Here we have all controller in team gof back app")
                         .version("1.0"));
     }
 }

@@ -1,6 +1,7 @@
 package istic.m2.project.gofback.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import istic.m2.project.gofback.entities.enums.SessionType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -19,10 +20,14 @@ import java.util.Set;
 public class Epreuve extends Auditable<String> {
 
     private String name;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SessionType session;
     @Column
     @JdbcTypeCode(SqlTypes.JSON)
     private Qualification qualification;
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "discipline_id", nullable = false)
     private Discipline discipline;
     @ManyToMany(targetEntity = Cavalier.class, fetch = FetchType.LAZY)
@@ -30,13 +35,7 @@ public class Epreuve extends Auditable<String> {
             joinColumns = {@JoinColumn(name = "epreuve_id")},
             inverseJoinColumns = {@JoinColumn(name = "cavalier_id")})
     private Set<Cavalier> cavaliersPracticeEpreuve;
-
-    @ManyToMany(targetEntity = Cavalier.class, fetch = FetchType.LAZY)
-    @JoinTable(name = "cavalier_epreuve_participated",
-            joinColumns = {@JoinColumn(name = "epreuve_id")},
-            inverseJoinColumns = {@JoinColumn(name = "cavalier_id")})
-    private Set<Cavalier> cavaliersEpreuveParticipated;
-
+    
     @ManyToMany(targetEntity = Team.class, fetch = FetchType.LAZY, mappedBy = "epreuvesParticipated")
     private Set<Team> teamBelong;
 
@@ -46,9 +45,6 @@ public class Epreuve extends Auditable<String> {
                 "name='" + name + '\'' +
                 ", qualification=" + qualification +
                 ", discipline=" + discipline +
-                ", cavaliersPracticeEpreuve=" + cavaliersPracticeEpreuve +
-                ", cavaliersEpreuveParticipated=" + cavaliersEpreuveParticipated +
-                ", teamBelong=" + teamBelong +
                 '}';
     }
 

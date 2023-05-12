@@ -1,18 +1,23 @@
 package istic.m2.project.gofback.controllers.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.List;
 
+@AllArgsConstructor
+@Getter
 public class InscriptionInDto {
     private String firstname;
     private String lastname;
-    private List<epreuveInscription> epreuve;
+    private List<ChampionShipInscription> epreuves;
     private String email;
     private String pwd;
 
 
-    private class epreuveInscription {
-        private Integer championshipId;
-        private Integer riderscore;
-        private Integer horseScore;
+    @Getter
+    public static class ChampionShipInscription {
+        private Long championshipId;
+        private Integer riderScore;
     }
 }
