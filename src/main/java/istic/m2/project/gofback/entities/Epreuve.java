@@ -35,14 +35,7 @@ public class Epreuve extends Auditable<String> {
             joinColumns = {@JoinColumn(name = "epreuve_id")},
             inverseJoinColumns = {@JoinColumn(name = "cavalier_id")})
     private Set<Cavalier> cavaliersPracticeEpreuve;
-
-    //TODO create flyway to delete
-//    @ManyToMany(targetEntity = Cavalier.class, fetch = FetchType.LAZY)
-//    @JoinTable(name = "cavalier_epreuve_participated",
-//            joinColumns = {@JoinColumn(name = "epreuve_id")},
-//            inverseJoinColumns = {@JoinColumn(name = "cavalier_id")})
-//    private Set<Cavalier> cavaliersEpreuveParticipated;
-//
+    
     @ManyToMany(targetEntity = Team.class, fetch = FetchType.LAZY, mappedBy = "epreuvesParticipated")
     private Set<Team> teamBelong;
 
