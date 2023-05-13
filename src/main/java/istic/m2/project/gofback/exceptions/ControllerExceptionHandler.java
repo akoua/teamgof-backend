@@ -41,7 +41,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         ResponseDto<Serializable> body = new ResponseDto<>();
         body.setSuccess(false);
         body.setError(new ResponseDto.MessageDto(
-                MessageError.ERROR_DATABASE, ex.getMessage()));
+                MessageError.ERROR_DATABASE, cutMessage(ex.getRootCause().getMessage(), "Key.*")));
         return ResponseEntity.unprocessableEntity().body(body);
     }
 
@@ -53,25 +53,12 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         ResponseDto<Serializable> body = new ResponseDto<>();
         body.setSuccess(false);
         body.setError(new ResponseDto.MessageDto(
-                MessageError.ERROR_DATABASE, cutMessage(ex.getMessage())));
+                MessageError.ERROR_DATABASE, cutMessage(ex.getMessage(), "([a-zA-Z0-9]+\\.[a-zA-Z0-9]+)")));
         return ResponseEntity.unprocessableEntity().body(body);
     }
 
-//    @ExceptionHandler({HttpMessageNotWritableException.class})
-//    @Order(0)
-//    @ResponseBody
-//    public ResponseEntity<ResponseDto<Serializable>> handleOtherException(HttpMessageNotWritableException ex) {
-//        log.error(DATABASE_EXCEPTION, ex);
-//
-//        ResponseDto<Serializable> body = new ResponseDto<>();
-//        body.setSuccess(false);
-//        body.setError(new ResponseDto.MessageDto(
-//                MessageError.ERROR_DATABASE, cutMessage(ex.getMessage())));
-//        return ResponseEntity.unprocessableEntity().body(body);
-//    }
-
-    private String cutMessage(String msg) {
-        Pattern pattern = Pattern.compile("([a-zA-Z0-9]+\\.[a-zA-Z0-9]+)", Pattern.CASE_INSENSITIVE);
+    private String cutMessage(String msg, String regex) {
+        Pattern pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(msg);
         String ret = msg;
 

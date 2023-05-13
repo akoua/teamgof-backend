@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 /**
- * This class represent the join table between {@link Cavalier} and {@link Team} which
- * contains the differents cavaliers which belongs to the team
+ * This class represent the join table between {@link Epreuve} and {@link Team} which
+ * contains the different championships which belongs to the team
  */
 @Entity
 @NoArgsConstructor
@@ -27,4 +27,8 @@ public class EpreuveTeamParticipated extends Auditable<String> {
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
 
+    @Override
+    public Long getId() {
+        return super.getId();
+    }
 }
