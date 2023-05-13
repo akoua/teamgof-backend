@@ -18,12 +18,12 @@ import lombok.*;
 @Table(name = "cavalier_epreuve_practice")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class CavalierEpreuvePractice extends Auditable<String> {
-    
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cavalier_id", nullable = false)
     private Cavalier cavalier;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "epreuve_id", nullable = false)
     private Epreuve epreuve;
 
