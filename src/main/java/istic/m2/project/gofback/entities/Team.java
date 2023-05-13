@@ -1,10 +1,14 @@
 package istic.m2.project.gofback.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import istic.m2.project.gofback.controllers.dto.CreateTeamInDto;
 import istic.m2.project.gofback.entities.enums.TypeMotivation;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -17,12 +21,18 @@ import java.util.Set;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Team extends Auditable<String> {
 
+    @Column(unique = true)
     private String name;
+
+    private String departement;
+
+    private String description;
 
     @Enumerated(EnumType.STRING)
     private TypeMotivation motivation;
 
-//    private Departement location;
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<CreateTeamInDto.TeamMember> members;
 
     @ManyToMany(targetEntity = Cavalier.class, fetch = FetchType.LAZY)
     @JoinTable(name = "cavalier_team_participated",
