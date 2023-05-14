@@ -41,7 +41,6 @@ public class CreateTeamInDto {
     @NoArgsConstructor
     @Data
     public static class DisciplineEpreuveTeam {
-        //        private String discipline;
         @NotEmpty(message = "Set at least one championship")
         private List<Long> championshipId;
     }

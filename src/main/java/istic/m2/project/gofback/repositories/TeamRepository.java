@@ -10,8 +10,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 public interface TeamRepository extends JpaRepository<Team, Long> {
+
+    @EntityGraph(attributePaths = {"cavaliersParticipated", "epreuvesParticipated"})
+    @Query("select t from #{#entityName} t where t.id = :id")
+    Optional<Team> findTeamByIdAndGraphisAttributes(Long id);
 
     @EntityGraph(attributePaths = {"epreuvesParticipated", "epreuvesParticipated.discipline"})
     @Query("select t from Team t")
@@ -20,5 +26,6 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     default Page<Team> findAllTeamsAndEpreuvePagineable(Integer begin, Integer size, Sort sort) {
         return findAllTeamsAndEpreuvePagineable(OffsetLimitPageRequest.of(begin, size, sort));
     }
+
 
 }

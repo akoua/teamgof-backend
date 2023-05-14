@@ -20,6 +20,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,19 +37,8 @@ public class TeamService {
 
     public Long createTeam(@Valid CreateTeamInDto request) throws BusinessException {
 
-        List<Long> championsList = request.getDisciplineEpreuves()
-                .stream()
-                .flatMap(ed -> ed.getChampionshipId().stream())
-                .toList();
-        List<String> ffeList = request.getMembers()
-                .stream()
-                .map(CreateTeamInDto.TeamMember::getFfe)
-                .toList();
 
-        List<Cavalier> ridersList = cavalierRepository.findCavaliersIdByFfeIn(ffeList)
-                .orElse(new ArrayList<>());
-        Set<Epreuve> epreuveSet = epreuveRepository.findAllEpreuveIn(championsList)
-                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", championsList)));
+        List<Cavalier> ridersList = findRidersInDatabase(request.getMembers());
 
         Team team = new Team()
                 .withName(request.getName())
@@ -56,38 +46,24 @@ public class TeamService {
                 .withDepartement(request.getDepartement())
                 .withMotivation(request.getMotivation())
                 .withMembers(request.getMembers())
-                .withEpreuvesParticipated(epreuveSet);
+                .withEpreuvesParticipated(findChampionShipsInDatabase(request.getDisciplineEpreuves()));
 
-        if (ridersList.isEmpty()) {
-            team.setMembers(request.getMembers());
-        } else {
-            List<CreateTeamInDto.TeamMember> members = request.getMembers();
-            Set<Cavalier> ridersAlreadyExistInDb = ridersList.stream()
-                    .filter(rider -> members
-                            .stream().anyMatch(teamMember -> teamMember.getFfe().equals(rider.getNumberFfe())))
-                    .collect(Collectors.toSet());
-            team.setCavaliersParticipated(ridersAlreadyExistInDb);
-            List<CreateTeamInDto.TeamMember> ridersNotAlreadyExist = members.stream()
-                    .map(m -> {
-                        for (Cavalier c : ridersAlreadyExistInDb) {
-                            if (c.getNumberFfe().equals(m.getFfe())) {
-                                m = modelMapper.map(c, CreateTeamInDto.TeamMember.class);
-                            }
-                        }
-                        return m;
-                    })
-                    .toList();
-
-            team.setMembers(ridersNotAlreadyExist);
-        }
+        setTeamRiders(team, ridersList, request.getMembers());
         return teamRepository.save(team).getId();
     }
 
+    /**
+     * gets all teams by pagination
+     *
+     * @param beginIndex the beginning index
+     * @param endIndex   the end index
+     * @param url        the url
+     * @return an instance {@link List<TeamOutDto>}
+     */
     public ResponseDto<ArrayList<TeamOutDto>> getAllTeams(Integer beginIndex, Integer endIndex, String url) {
 
         int paginationDefaultPageSize = appConfig.getPaginationDefaultPageSize();
 
-        int end = PagingHelper.getEndFromRange(beginIndex, endIndex, paginationDefaultPageSize);
         int nbResults = PagingHelper.getNbResults(beginIndex, endIndex, paginationDefaultPageSize);
 
         Page<Team> allTeamsAndEpreuve = teamRepository.findAllTeamsAndEpreuvePagineable(beginIndex,
@@ -100,45 +76,109 @@ public class TeamService {
         return response;
     }
 
+    @Transactional
+    public TeamOutDto updateTeam(Long teamId, CreateTeamInDto requestUpdate) throws BusinessException {
+        Team team = teamRepository.findTeamByIdAndGraphisAttributes(teamId)
+                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.TEAM_NOT_FOUND, String.format("with id %s", teamId)));
+
+        List<Cavalier> ridersList = findRidersInDatabase(requestUpdate.getMembers());
+        Set<Epreuve> epreuveSet = findChampionShipsInDatabase(requestUpdate.getDisciplineEpreuves());
+
+        team.setName(requestUpdate.getName());
+        team.setDescription(requestUpdate.getDescription());
+        team.setMotivation(requestUpdate.getMotivation());
+        team.setDepartement(requestUpdate.getDepartement());
+        team.setMembers(requestUpdate.getMembers());
+        team.setEpreuvesParticipated(epreuveSet);
+
+        setTeamRiders(team, ridersList, requestUpdate.getMembers());
+
+        return createTeamDto(team);
+    }
+
+    private Set<Epreuve> findChampionShipsInDatabase(List<CreateTeamInDto.DisciplineEpreuveTeam> disciplineEpreuves) throws BusinessException {
+        List<Long> championsList = disciplineEpreuves
+                .stream()
+                .flatMap(ed -> ed.getChampionshipId().stream())
+                .toList();
+        return epreuveRepository.findAllEpreuveIn(championsList)
+                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", championsList)));
+    }
+
+    private List<Cavalier> findRidersInDatabase(List<CreateTeamInDto.TeamMember> members) {
+        List<String> ffeList = members
+                .stream()
+                .map(CreateTeamInDto.TeamMember::getFfe)
+                .toList();
+
+        return cavalierRepository.findCavaliersIdByFfeIn(ffeList)
+                .orElse(new ArrayList<>());
+    }
+
+    private void setTeamRiders(Team team, List<Cavalier> ridersList, List<CreateTeamInDto.TeamMember> members) {
+        if (ridersList.isEmpty()) {
+            team.setMembers(members);
+            team.setCavaliersParticipated(Collections.emptySet());
+        } else {
+            Set<Cavalier> ridersAlreadyExistInDb = ridersList.stream()
+                    .filter(rider -> members
+                            .stream().anyMatch(teamMember -> teamMember.getFfe().equals(rider.getNumberFfe())))
+                    .collect(Collectors.toSet());
+            List<CreateTeamInDto.TeamMember> ridersNotAlreadyExist = members.stream()
+                    .map(m -> {
+                        for (Cavalier c : ridersAlreadyExistInDb) {
+                            if (c.getNumberFfe().equals(m.getFfe())) {
+                                m = modelMapper.map(c, CreateTeamInDto.TeamMember.class);
+                            }
+                        }
+                        return m;
+                    })
+                    .toList();
+
+            team.setCavaliersParticipated(ridersAlreadyExistInDb);
+            team.setMembers(ridersNotAlreadyExist);
+        }
+    }
+
     private List<TeamOutDto> createTeamOutDtos(List<Team> allTeamsAndEpreuve) {
         List<TeamOutDto> teamOutDtos = allTeamsAndEpreuve.stream()
-                .map(team -> {
-                            HashMap<String, List<String>> epreuves = new HashMap<>();
-                            HashMap<String, List<String>> disciplineAndEpreuves = team.getEpreuvesParticipated()
-                                    .stream()
-                                    .map(e -> {
-                                        String discipline = e.getDiscipline().getName();
-                                        if (epreuves.containsKey(discipline)) {
-                                            epreuves.get(discipline)
-                                                    .add(e.getName());
-                                        } else {
-                                            epreuves.put(discipline, new ArrayList<>(List.of(e.getName())));
-                                        }
-                                        return epreuves;
-                                    })
-                                    .flatMap(mp -> mp.entrySet().stream())
-                                    .collect(HashMap::new,
-                                            (map, entries) -> map.put(entries.getKey(), entries.getValue()),
-                                            (mapIn, mapOut) -> mapOut.putAll(mapIn));
-
-
-                            return new TeamOutDto()
-                                    .withName(team.getName())
-                                    .withDescription(team.getDescription())
-                                    .withDepartement(team.getDepartement())
-                                    .withMotivation(team.getMotivation())
-                                    .withMembers(team.getMembers())
-                                    .withEpreuves(disciplineAndEpreuves.entrySet()
-                                            .stream()
-                                            .map(kv -> new TeamOutDto.DisciplineEpreuveTeam()
-                                                    .withDiscipline(kv.getKey())
-                                                    .withChampionshipNames(kv.getValue()))
-                                            .toList());
-
-                        }
+                .map(this::createTeamDto
                 )
                 .toList();
         return !teamOutDtos.isEmpty() ? teamOutDtos : Collections.emptyList();
     }
 
+    private TeamOutDto createTeamDto(Team team) {
+
+        HashMap<String, List<String>> epreuves = new HashMap<>();
+        HashMap<String, List<String>> disciplineAndEpreuves = team.getEpreuvesParticipated()
+                .stream()
+                .map(e -> {
+                    String discipline = e.getDiscipline().getName();
+                    if (epreuves.containsKey(discipline)) {
+                        epreuves.get(discipline)
+                                .add(e.getName());
+                    } else {
+                        epreuves.put(discipline, new ArrayList<>(List.of(e.getName())));
+                    }
+                    return epreuves;
+                })
+                .flatMap(mp -> mp.entrySet().stream())
+                .collect(HashMap::new,
+                        (map, entries) -> map.put(entries.getKey(), entries.getValue()),
+                        (mapIn, mapOut) -> mapOut.putAll(mapIn));
+
+        return new TeamOutDto()
+                .withName(team.getName())
+                .withDescription(team.getDescription())
+                .withDepartement(team.getDepartement())
+                .withMotivation(team.getMotivation())
+                .withMembers(team.getMembers())
+                .withEpreuves(disciplineAndEpreuves.entrySet()
+                        .stream()
+                        .map(kv -> new TeamOutDto.DisciplineEpreuveTeam()
+                                .withDiscipline(kv.getKey())
+                                .withChampionshipNames(kv.getValue()))
+                        .toList());
+    }
 }
