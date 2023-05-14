@@ -3,7 +3,7 @@ package istic.m2.project.gofback.services;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import istic.m2.project.gofback.config.SecurityConfig;
+import istic.m2.project.gofback.config.AppConfig;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.exceptions.MessageError;
 import istic.m2.project.gofback.repositories.CavalierRepository;
@@ -23,7 +23,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @Slf4j
 public class JwtTokenService {
-    private final SecurityConfig securityConfig;
+    private final AppConfig appConfig;
 
     private final CavalierRepository cavalierRepository;
 
@@ -41,7 +41,7 @@ public class JwtTokenService {
     }
 
     private String buildJwt(String email) {
-        var jwtConfig = securityConfig.getJwt();
+        var jwtConfig = appConfig.getSecurity().getJwt();
         SecretKey key = Keys.hmacShaKeyFor(jwtConfig.getJwtKey().getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
                 .setIssuer(jwtConfig.getIssuer())

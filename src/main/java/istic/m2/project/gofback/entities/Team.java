@@ -40,7 +40,7 @@ public class Team extends Auditable<String> {
             inverseJoinColumns = {@JoinColumn(name = "cavalier_id")})
     private Set<Cavalier> cavaliersParticipated;
 
-    @ManyToMany(targetEntity = Cavalier.class, fetch = FetchType.LAZY)
+    @ManyToMany(targetEntity = Epreuve.class, fetch = FetchType.LAZY)
     @JoinTable(name = "epreuve_team_participated",
             joinColumns = {@JoinColumn(name = "team_id")},
             inverseJoinColumns = {@JoinColumn(name = "epreuve_id")})

@@ -1,6 +1,6 @@
 package istic.m2.project.gofback.services;
 
-import istic.m2.project.gofback.config.SecurityConfig;
+import istic.m2.project.gofback.config.AppConfig;
 import istic.m2.project.gofback.controllers.dto.TokenRefreshOutDto;
 import istic.m2.project.gofback.entities.RefreshToken;
 import istic.m2.project.gofback.exceptions.BusinessException;
@@ -17,7 +17,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class RefreshJwtTokenService {
-    private final SecurityConfig securityConfig;
+    private final AppConfig appConfig;
     private final CavalierRepository cavalierRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenService jwtTokenService;
@@ -46,7 +46,7 @@ public class RefreshJwtTokenService {
         RefreshToken refreshToken = new RefreshToken()
                 .withCavalier(cavalier)
                 .withToken(UUID.randomUUID().toString())
-                .withExpiryDate(Instant.now().plusSeconds(securityConfig.getJwt()
+                .withExpiryDate(Instant.now().plusSeconds(appConfig.getSecurity().getJwt()
                         .getRefreshTokenExpirationTime()));
 
         refreshTokenRepository.save(refreshToken);

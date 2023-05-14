@@ -19,16 +19,12 @@ import lombok.*;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class EpreuveTeamParticipated extends Auditable<String> {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "epreuve_id", nullable = false)
     private Epreuve epreuve;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id", nullable = false)
     private Team team;
-
-    @Override
-    public Long getId() {
-        return super.getId();
-    }
+    
 }
