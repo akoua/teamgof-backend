@@ -6,7 +6,7 @@ import istic.m2.project.gofback.controllers.dto.CreateTeamInDto;
 import istic.m2.project.gofback.controllers.dto.ResponseDto;
 import istic.m2.project.gofback.controllers.dto.TeamOutDto;
 import istic.m2.project.gofback.exceptions.BusinessException;
-import istic.m2.project.gofback.exceptions.MessageError;
+import istic.m2.project.gofback.exceptions.ErrorUtils;
 import istic.m2.project.gofback.repositories.paging.PagingHelper;
 import istic.m2.project.gofback.services.TeamService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,16 +33,9 @@ public class TeamController {
     public ResponseEntity<ResponseDto<ArrayList<TeamOutDto>>> getAllTeam(@RequestParam(name = "begin", defaultValue = "0", required = false) Integer begin,
                                                                          @RequestParam(name = "end", defaultValue = "2", required = false) Integer end,
                                                                          HttpServletRequest request) throws BusinessException {
-        if (begin > end) {
-            throw new BusinessException(MessageError.PAGINATION_ERROR, "begin can't be greater than end");
-        }
-        if ((end - begin) + 1 > appConfig.getPaginationDefaultPageSize()) {
-            throw new BusinessException(MessageError.PAGINATION_ERROR, String.format("Page size can't be greater than %s",
-                    appConfig.getPaginationDefaultPageSize()));
-        }
-        if ((end.equals(begin))) {
-            throw new BusinessException(MessageError.PAGINATION_ERROR, "begin and end can't be equals");
-        }
+
+        ErrorUtils.verifyPaginationIndex(begin, end, appConfig);
+
         var response = teamService.getAllTeams(begin, end, request.getRequestURI());
         if (null != response.getPagination() && PagingHelper.isPartialResponseContent(response.getPagination())) {
             return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
@@ -58,6 +51,13 @@ public class TeamController {
 
         return ResponseEntity.ok()
                 .body(new ResponseDto<>(teamService.createTeam(request)));
+    }
+
+    @PutMapping("update/{teamId}")
+    @Operation(description = "Update Team")
+    public ResponseEntity<ResponseDto<TeamOutDto>> updateTeam(@PathVariable Long teamId, @RequestBody @Valid CreateTeamInDto requestUpdate) throws BusinessException {
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(teamService.updateTeam(teamId, requestUpdate)));
     }
 
 }
