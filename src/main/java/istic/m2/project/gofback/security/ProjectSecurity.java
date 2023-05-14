@@ -1,6 +1,6 @@
 package istic.m2.project.gofback.security;
 
-import istic.m2.project.gofback.config.SecurityConfig;
+import istic.m2.project.gofback.config.AppConfig;
 import istic.m2.project.gofback.security.filter.JwtTokenValidatorFilter;
 import istic.m2.project.gofback.services.RefreshJwtTokenService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class ProjectSecurity {
 
-    private final SecurityConfig securityConfig;
+    private final AppConfig appConfig;
     private final RefreshJwtTokenService refreshJwtTokenService;
 
     @Bean
@@ -60,7 +60,7 @@ public class ProjectSecurity {
                 )
                 .permitAll()
                 .and()
-                .addFilterBefore(new JwtTokenValidatorFilter(securityConfig, refreshJwtTokenService), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidatorFilter(appConfig, refreshJwtTokenService), BasicAuthenticationFilter.class)
                 .httpBasic()
                 .and()
                 .build();

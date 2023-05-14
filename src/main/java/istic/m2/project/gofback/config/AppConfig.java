@@ -7,15 +7,29 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 @Component
-@ConfigurationProperties("security")
+@ConfigurationProperties("app")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Validated
-public class SecurityConfig {
+public class AppConfig {
+
     @Valid
-    private JwtConfig jwt;
+    private int paginationDefaultPageSize;
+    @Valid
+    private SecurityConfig security;
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @With
+    @Validated
+    public static class SecurityConfig {
+        @Valid
+        private JwtConfig jwt;
+    }
 
     @Getter
     @Setter

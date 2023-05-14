@@ -3,7 +3,7 @@ package istic.m2.project.gofback.security.filter;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import istic.m2.project.gofback.config.SecurityConfig;
+import istic.m2.project.gofback.config.AppConfig;
 import istic.m2.project.gofback.services.RefreshJwtTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,17 +29,17 @@ import java.nio.charset.StandardCharsets;
 @RequiredArgsConstructor
 public class JwtTokenValidatorFilter extends OncePerRequestFilter {
 
-    private final SecurityConfig securityConfig;
+    private final AppConfig appConfig;
     private final RefreshJwtTokenService refreshJwtTokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        var token = request.getHeader(securityConfig.getJwt().getHeader());
+        var token = request.getHeader(appConfig.getSecurity().getJwt().getHeader());
 
         if (null != token) {
             String jwt = parseJwt(request);
-            SecretKey key = Keys.hmacShaKeyFor(securityConfig.getJwt().getJwtKey().getBytes(StandardCharsets.UTF_8));
+            SecretKey key = Keys.hmacShaKeyFor(appConfig.getSecurity().getJwt().getJwtKey().getBytes(StandardCharsets.UTF_8));
             if (null != jwt && validateJwtToken(jwt, key, request)) {
 
                 //TODO il faut vérifier que l'email dans le jwt est vraiment celui auquel on s'attend pour éviter
