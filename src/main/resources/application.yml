@@ -42,11 +42,13 @@ springdoc:
   apiDocs:
     path: /v3/api-docs
 
-security:
-  jwt:
-    jwt-key: ${JWT_KEY:eBDS4949a2c1d8a3501fefcfd7ff6c15f0ff35d8946b46d6f7f9bd06aa50f8bb70DRSFGQHQHJJQKKAKKAIIIAIAIIAIAIAI}
-    issuer: ${JWT_ISSUER:Gof Team}
-    expiration-time: ${JWT_EXPIRATION_TIME:3600}
-    header: Authorization
-    header-refresh: RefreshToken
-    refresh-token-expiration-time: ${JWT_REFRESH_TOKEN_EXPIRATION_TIME:7200}
+app:
+  pagination-default-page-size: ${PAGINATION_DEFAULT_PAGE_SIZE:3}
+  security:
+    jwt:
+      jwt-key: ${JWT_KEY:eBDS4949a2c1d8a3501fefcfd7ff6c15f0ff35d8946b46d6f7f9bd06aa50f8bb70DRSFGQHQHJJQKKAKKAIIIAIAIIAIAIAI}
+      issuer: ${JWT_ISSUER:Gof Team}
+      expiration-time: ${JWT_EXPIRATION_TIME:3600}
+      header: Authorization
+      header-refresh: RefreshToken
+      refresh-token-expiration-time: ${JWT_REFRESH_TOKEN_EXPIRATION_TIME:7200}
