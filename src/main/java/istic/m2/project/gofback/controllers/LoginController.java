@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/v1/api/login")
+@RequestMapping(path = "/api/v1/login")
 @RequiredArgsConstructor
 public class LoginController {
     private final LoginService loginService;

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.Duration;
 
 @RestController
-@RequestMapping(path = "/v1/api/cavalier")
+@RequestMapping(path = "/api/v1/cavalier")
 @RequiredArgsConstructor
 public class CavalierController {
     private final CavalierService cavalierService;

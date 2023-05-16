@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(path = "/v1/api/epreuves")
+@RequestMapping(path = "/api/v1/epreuves")
 @RequiredArgsConstructor
 public class EpreuveController {
 

@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * Allow to create team and modify it, according business rules
  */
 @RestController()
-@RequestMapping(path = "/v1/api/team")
+@RequestMapping(path = "/api/v1/team")
 @RequiredArgsConstructor
 public class TeamController {
     private final TeamService teamService;

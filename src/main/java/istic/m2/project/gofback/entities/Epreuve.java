@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -35,9 +36,12 @@ public class Epreuve extends Auditable<String> {
             joinColumns = {@JoinColumn(name = "epreuve_id")},
             inverseJoinColumns = {@JoinColumn(name = "cavalier_id")})
     private Set<Cavalier> cavaliersPracticeEpreuve;
-    
+
     @ManyToMany(targetEntity = Team.class, fetch = FetchType.LAZY, mappedBy = "epreuvesParticipated")
     private Set<Team> teamBelong;
+
+    @OneToMany(targetEntity = Precision.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "epreuve", orphanRemoval = false)
+    private List<Precision> precisions;
 
     @Override
     public String toString() {

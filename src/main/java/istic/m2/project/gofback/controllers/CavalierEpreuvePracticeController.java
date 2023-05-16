@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/v1/api/CavalierEpreuvePractice")
+@RequestMapping("/api/v1/CavalierEpreuvePractice")
 @AllArgsConstructor
 public class CavalierEpreuvePracticeController {
 
