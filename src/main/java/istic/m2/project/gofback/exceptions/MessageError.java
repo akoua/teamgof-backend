@@ -8,7 +8,7 @@ public enum MessageError {
     DISCIPLINE_NOT_FOUND("Discipline not found in database"),
     EPREUVE_TEAM_PARTICIPATED_NOT_FOUND("Epreuve team participated not found in database"),
     TEAM_NOT_FOUND("Team not found in database"),
-    PAGINATION_ERROR("Paginat ion error"),
+    PAGINATION_ERROR("Pagination error"),
     ERROR_DATABASE("Database error"),
     ERROR_TECHNIQUE("Technical error");
     private String message;

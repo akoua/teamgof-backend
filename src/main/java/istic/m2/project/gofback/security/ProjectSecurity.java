@@ -42,21 +42,22 @@ public class ProjectSecurity {
                     return config;
                 }).and()
                 .authorizeHttpRequests()
-                .requestMatchers(new AntPathRequestMatcher("/v1/api/cavalier/**"),
-                        new AntPathRequestMatcher("/v1/api/login/sign-in/**"),
-                        new AntPathRequestMatcher("/v1/api/team/**")
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/cavalier/**"),
+                        new AntPathRequestMatcher("/api/v1/login/sign-in/**"),
+                        new AntPathRequestMatcher("/api/v1/team/**"),
+                        new AntPathRequestMatcher("/api/v1/precisions/**")
                 )
                 .authenticated().and()
                 .authorizeHttpRequests()
-                .requestMatchers(new AntPathRequestMatcher("/v1/api/login/sign-up/**"),
-                        new AntPathRequestMatcher("/v1/api/token/**"),
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/login/sign-up/**"),
+                        new AntPathRequestMatcher("/api/v1/token/**"),
                         new AntPathRequestMatcher("/v3/api-docs/**"),
                         new AntPathRequestMatcher("/swagger-ui.html"),
                         new AntPathRequestMatcher("/swagger-ui/**"),
                         new AntPathRequestMatcher("/disciplines/**"),
                         new AntPathRequestMatcher("/epreuves/**"),
                         //TODO must change
-                        new AntPathRequestMatcher("/v1/api/epreuves/add/**")
+                        new AntPathRequestMatcher("/api/v1/epreuves/add/**")
                 )
                 .permitAll()
                 .and()
