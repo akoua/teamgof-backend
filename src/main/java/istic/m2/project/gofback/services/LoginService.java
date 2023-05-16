@@ -1,4 +1,4 @@
-package istic.m2.project.gofback.servicies;
+package istic.m2.project.gofback.services;
 
 import istic.m2.project.gofback.controllers.dto.InscriptionInDto;
 import istic.m2.project.gofback.controllers.dto.LoginInDto;
@@ -12,8 +12,6 @@ import istic.m2.project.gofback.exceptions.MessageError;
 import istic.m2.project.gofback.repositories.CavalierEpreuvePracticeRepository;
 import istic.m2.project.gofback.repositories.CavalierRepository;
 import istic.m2.project.gofback.repositories.EpreuveRepository;
-import istic.m2.project.gofback.services.JwtTokenService;
-import istic.m2.project.gofback.services.RefreshJwtTokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

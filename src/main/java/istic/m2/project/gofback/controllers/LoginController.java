@@ -5,7 +5,7 @@ import istic.m2.project.gofback.controllers.dto.LoginInDto;
 import istic.m2.project.gofback.controllers.dto.LoginOutDto;
 import istic.m2.project.gofback.controllers.dto.ResponseDto;
 import istic.m2.project.gofback.exceptions.BusinessException;
-import istic.m2.project.gofback.servicies.LoginService;
+import istic.m2.project.gofback.services.LoginService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
