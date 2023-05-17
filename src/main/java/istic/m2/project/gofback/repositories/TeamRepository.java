@@ -16,8 +16,8 @@ import java.util.Optional;
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
     @EntityGraph(attributePaths = {"cavaliersParticipated", "epreuvesParticipated"})
-    @Query("select t from #{#entityName} t where t.id = :id")
-    Optional<Team> findTeamByIdAndGraphisAttributes(Long id);
+    @Query("select t from #{#entityName} t where t.id = :teamId")
+    Optional<Team> findTeamAndCavalierParticipatedAndEpreuveParticipatedById(Long teamId);
 
     @EntityGraph(attributePaths = {"epreuvesParticipated", "epreuvesParticipated.discipline"})
     @Query("select t from Team t")

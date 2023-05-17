@@ -1,0 +1,6 @@
+ALTER TABLE IF EXISTS precision
+    DROP COLUMN IF EXISTS minimal_conditions,
+    DROP COLUMN IF EXISTS other_rules;
+
+ALTER TABLE IF EXISTS precision
+    ADD COLUMN IF NOT EXISTS details JSONB;

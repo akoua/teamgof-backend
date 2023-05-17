@@ -13,12 +13,16 @@ import java.util.Optional;
 public interface CavalierRepository extends JpaRepository<Cavalier, Long> {
     Optional<Cavalier> findCavalierByEmail(String email);
 
-    @EntityGraph(attributePaths = {"poneys", "epreuveCavalierPractice", "teamBelong"})
-    @Query("select c from Cavalier  c where c.id = :id")
-    Optional<Cavalier> findCavalierByIdWithEntityGraph(Long id);
+//    @EntityGraph(attributePaths = {"poneys", "epreuveCavalierPractice", "teamBelong"})
+//    @Query("select c from Cavalier  c where c.id = :id")
+//    Optional<Cavalier> findCavalierByIdWithEntityGraph(Long id);
 
 
     @Query("select c from Cavalier c where c.numberFfe in (:ffe)")
     Optional<List<Cavalier>> findCavaliersIdByFfeIn(List<String> ffe);
+
+    @EntityGraph(attributePaths = {"epreuveCavalierPractice", "epreuveCavalierPractice.qualification"})
+    @Query("select c from Cavalier c where c.id = :id")
+    Optional<Cavalier> findCavalierAndEpreuveCavalierPracticeById(Long id);
 
 }

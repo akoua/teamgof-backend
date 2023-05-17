@@ -2,7 +2,7 @@ package istic.m2.project.gofback.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import istic.m2.project.gofback.controllers.dto.CreateTeamInDto;
-import istic.m2.project.gofback.entities.enums.TypeMotivation;
+import istic.m2.project.gofback.entities.enums.MotivationType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -29,7 +29,7 @@ public class Team extends Auditable<String> {
     private String description;
 
     @Enumerated(EnumType.STRING)
-    private TypeMotivation motivation;
+    private MotivationType motivation;
 
     @JdbcTypeCode(SqlTypes.JSON)
     private List<CreateTeamInDto.TeamMember> members;

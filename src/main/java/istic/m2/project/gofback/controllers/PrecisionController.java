@@ -25,6 +25,6 @@ public class PrecisionController {
     @PostMapping(path = "create")
     @Operation(description = "add a new precision for a specific championship")
     public ResponseEntity<ResponseDto<ArrayList<Long>>> addPrecisionToEpreuve(@RequestBody @Valid PrecisionInDto precision) throws BusinessException {
-        return ResponseEntity.ok(new ResponseDto<>(new ArrayList<>(precisionService.addPrecion(precision))));
+        return ResponseEntity.ok(new ResponseDto<>(new ArrayList<>(precisionService.addPrecision(precision))));
     }
 }

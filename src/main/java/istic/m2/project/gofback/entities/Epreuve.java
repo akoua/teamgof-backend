@@ -7,7 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -21,7 +21,6 @@ import java.util.Set;
 public class Epreuve extends Auditable<String> {
 
     private String name;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SessionType session;
@@ -36,12 +35,33 @@ public class Epreuve extends Auditable<String> {
             joinColumns = {@JoinColumn(name = "epreuve_id")},
             inverseJoinColumns = {@JoinColumn(name = "cavalier_id")})
     private Set<Cavalier> cavaliersPracticeEpreuve;
-
     @ManyToMany(targetEntity = Team.class, fetch = FetchType.LAZY, mappedBy = "epreuvesParticipated")
     private Set<Team> teamBelong;
+    @OneToOne(targetEntity = Precision.class, cascade = CascadeType.ALL, mappedBy = "epreuve", orphanRemoval = true)
+    private Precision precision;
 
-    @OneToMany(targetEntity = Precision.class, fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "epreuve", orphanRemoval = false)
-    private List<Precision> precisions;
+    @ManyToMany(targetEntity = Exclusion.class, fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "epreuve_exclusion",
+            joinColumns = {@JoinColumn(name = "epreuve_id")},
+            inverseJoinColumns = {@JoinColumn(name = "exclusion_id")})
+    private Set<Exclusion> exclusions;
+    @ManyToMany(targetEntity = HelpFile.class, fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(name = "epreuve_help_file",
+            joinColumns = {@JoinColumn(name = "epreuve_id")},
+            inverseJoinColumns = {@JoinColumn(name = "help_file_id")})
+    private Set<HelpFile> helpFiles;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Epreuve other)) return false;
+        return Objects.equals(getName(), other.getName()) && Objects.equals(getDiscipline().getName(), other.getDiscipline().getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getDiscipline().getName());
+    }
 
     @Override
     public String toString() {
@@ -69,5 +89,7 @@ public class Epreuve extends Auditable<String> {
                     '}';
         }
     }
+
+
 }
 

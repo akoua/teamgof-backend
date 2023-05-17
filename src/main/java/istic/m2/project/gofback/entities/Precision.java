@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.entities;
 
+import istic.m2.project.gofback.entities.enums.PrecisionType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -16,34 +17,20 @@ import java.util.List;
 @AttributeOverride(name = "id", column = @Column(name = "precision_id"))
 public class Precision extends Auditable<String> {
 
-    @ManyToOne(targetEntity = Epreuve.class, fetch = FetchType.LAZY, optional = false)
+    @OneToOne(targetEntity = Epreuve.class, fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "epreuve_id", nullable = false, unique = true)
     private Epreuve epreuve;
-    @Column(name = "minimal_conditions", nullable = false)
-    @JdbcTypeCode(SqlTypes.JSON)
-    private MinimalConditions minimalConditions;
 
-    @Column(name = "other_rules", nullable = false)
+    //TODO after merge must be not nullable
+    @Column(name = "details", nullable = true)
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<OtherRules> otherRules;
+    private List<PrecisionDto> details;
 
-    @With
-    @Getter
-    @Setter
+    @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class MinimalConditions {
-        private List<Long> conditionEpreuveIds;
-        private Double currentPercent;
-    }
-
-    @With
-    @Setter
-    @Getter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class OtherRules {
-        private String disciplineName;
-        private List<Long> otherRulesEpreuveIds;
+    public static class PrecisionDto {
+        private PrecisionType precisionType;
+        private List<String> values;
     }
 }

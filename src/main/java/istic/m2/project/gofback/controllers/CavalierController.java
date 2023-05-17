@@ -27,7 +27,7 @@ public class CavalierController {
                 .body(new ResponseDto<>(cavalierService.findUserById(id)));
     }
 
-    @PostMapping("update/infos")
+    @PutMapping("update/infos")
     public ResponseEntity<ResponseDto<CavalierOwnInfosDtoOut>> updateCavalierInfos(@RequestBody @Valid CavalierUpdateInDto requestUpdate) throws BusinessException, IllegalAccessException {
 
         return ResponseEntity.ok()

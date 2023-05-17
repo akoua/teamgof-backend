@@ -19,6 +19,11 @@ public interface CavalierEpreuvePracticeRepository extends JpaRepository<Cavalie
             "WHERE c.id = :id ")
     Optional<List<CavalierInfosProjectionDto>> findCavalierByIdAndEpreuvePractice(Long id);
 
+    @EntityGraph(attributePaths = {"epreuve"})
+    @Query("select cep from CavalierEpreuvePractice cep join Cavalier c on c.id = cep.cavalier.id " +
+            "where cep.cavalier.id = :cavalierId")
+    Optional<List<CavalierEpreuvePractice>> findCavalierEpreuvePracticeByCavalierId(Long cavalierId);
+
     @Modifying
     @Query("update CavalierEpreuvePractice c SET c.qualificationCavalier = :newValue WHERE c.id = :id ")
     void updateCavalierEpreuvePractice(Long id, Integer newValue);
