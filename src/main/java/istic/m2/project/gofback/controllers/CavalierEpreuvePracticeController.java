@@ -1,9 +1,11 @@
 package istic.m2.project.gofback.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import istic.m2.project.gofback.controllers.dto.ResponseDto;
 import istic.m2.project.gofback.entities.CavalierEpreuvePractice;
-import istic.m2.project.gofback.repositories.CavalierEpreuvePracticeRepository;
+import istic.m2.project.gofback.services.CavalierEpreuvePracticeService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -12,34 +14,39 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class CavalierEpreuvePracticeController {
 
-    @Autowired
-    private CavalierEpreuvePracticeRepository repository;
+    private final CavalierEpreuvePracticeService service;
 
     @GetMapping("infos/{id}")
-    public CavalierEpreuvePractice getCavalierEpreuvePractice(@PathVariable("id") Long id) {
-        return repository.findById(id).orElse(null);
+    @Operation(description = "Récupération de CavalierEpreuvePractice")
+    public ResponseEntity<ResponseDto<CavalierEpreuvePractice>> getCavalierEpreuvePractice(@PathVariable("id") Long id) {
+        CavalierEpreuvePractice cavalierEpreuvePractice = service.getCavalierEpreuvePractice(id);
+        if (cavalierEpreuvePractice == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(new ResponseDto<>(cavalierEpreuvePractice));
     }
 
     @PostMapping("add")
-    public CavalierEpreuvePractice addCreateCavalierEpreuvePractice(@RequestBody CavalierEpreuvePractice cavalierEpreuvePractice) {
-        return repository.save(cavalierEpreuvePractice);
+    @Operation(description = "Ajout de CavalierEpreuvePractice")
+    public ResponseEntity<ResponseDto<CavalierEpreuvePractice>> addCreateCavalierEpreuvePractice(@RequestBody CavalierEpreuvePractice cavalierEpreuvePractice) {
+        CavalierEpreuvePractice createdCavalierEpreuvePractice = service.addCreateCavalierEpreuvePractice(cavalierEpreuvePractice);
+        return ResponseEntity.ok(new ResponseDto<>(cavalierEpreuvePractice));
     }
 
     @PutMapping("/{id}")
-    public CavalierEpreuvePractice updateCavalierEpreuvePractice(@PathVariable("id") Long id, @RequestBody CavalierEpreuvePractice cavalierEpreuvePractice) {
-        CavalierEpreuvePractice existing = repository.findById(id).orElse(null);
-        if (existing == null) {
-            return null;
+    @Operation(description = "Modification de CavalierEpreuvePractice")
+    public ResponseEntity<ResponseDto<CavalierEpreuvePractice>> updateCavalierEpreuvePractice(@PathVariable("id") Long id, @RequestBody CavalierEpreuvePractice cavalierEpreuvePractice) {
+        CavalierEpreuvePractice updatedCavalierEpreuvePractice = service.updateCavalierEpreuvePractice(id, cavalierEpreuvePractice);
+        if (updatedCavalierEpreuvePractice == null) {
+            return ResponseEntity.notFound().build();
         }
-        existing.setCavalier(cavalierEpreuvePractice.getCavalier());
-        existing.setEpreuve(cavalierEpreuvePractice.getEpreuve());
-        existing.setQualificationCavalier(cavalierEpreuvePractice.getQualificationCavalier());
-        return repository.save(existing);
+        return ResponseEntity.ok(new ResponseDto<>(updatedCavalierEpreuvePractice));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCavalierEpreuvePractice(@PathVariable("id") Long id) {
-        repository.deleteById(id);
+    @Operation(description = "Suppression de CavalierEpreuvePractice")
+    public ResponseEntity<Void> deleteCavalierEpreuvePractice(@PathVariable("id") Long id) {
+        service.deleteCavalierEpreuvePractice(id);
+        return ResponseEntity.noContent().build();
     }
-
 }
