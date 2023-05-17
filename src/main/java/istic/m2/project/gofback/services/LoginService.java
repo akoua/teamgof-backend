@@ -19,8 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +46,7 @@ public class LoginService {
                 .map(InscriptionInDto.ChampionShipInscription::getChampionshipId)
                 .toList();
 
-        Set<Epreuve> allEpreuveIn = epreuveRepository.findAllEpreuveIn(listOfIdEpreuve)
+        List<Epreuve> allEpreuveIn = epreuveRepository.findAllEpreuveWhereIdIn(listOfIdEpreuve)
                 .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", listOfIdEpreuve)));
 
         Cavalier cavalier = new Cavalier()
@@ -54,7 +54,7 @@ public class LoginService {
                 .withLastName(inscriptionInDto.getLastname())
                 .withEmail(inscriptionInDto.getEmail())
                 .withPwd(passwordEncoder.encode(inscriptionInDto.getPwd()))
-                .withEpreuveCavalierPractice(allEpreuveIn);
+                .withEpreuveCavalierPractice(new HashSet<>(allEpreuveIn));
 
         Cavalier finalCavalier = cavalier;
         allEpreuveIn
