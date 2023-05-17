@@ -78,7 +78,7 @@ public class TeamService {
 
     @Transactional
     public TeamOutDto updateTeam(Long teamId, CreateTeamInDto requestUpdate) throws BusinessException {
-        Team team = teamRepository.findTeamByIdAndGraphisAttributes(teamId)
+        Team team = teamRepository.findTeamAndCavalierParticipatedAndEpreuveParticipatedById(teamId)
                 .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.TEAM_NOT_FOUND, String.format("with id %s", teamId)));
 
         List<Cavalier> ridersList = findRidersInDatabase(requestUpdate.getMembers());

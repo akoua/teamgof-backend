@@ -1,6 +1,6 @@
 package istic.m2.project.gofback.controllers.dto;
 
-import istic.m2.project.gofback.entities.enums.TypeMotivation;
+import istic.m2.project.gofback.entities.enums.MotivationType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -17,7 +17,7 @@ import java.util.List;
 public class CreateTeamInDto {
     private String name;
     private String description;
-    private TypeMotivation motivation = TypeMotivation.DECOUVERTE;
+    private MotivationType motivation = MotivationType.DECOUVERTE;
     private String departement;
     @Valid
     private List<TeamMember> members;

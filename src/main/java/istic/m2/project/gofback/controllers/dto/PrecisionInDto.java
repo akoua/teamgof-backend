@@ -14,15 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PrecisionInDto {
-    private List<EpreuvePrecisions> precisions;
+    private List<Precision.PrecisionDto> precisions;
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class EpreuvePrecisions {
-        private List<Long> epreuveIds;
-        private Precision.MinimalConditions minimalConditions;
-        private List<Precision.OtherRules> otherRules;
-    }
 
 }
