@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -93,7 +92,7 @@ public class CavalierService {
             List<Long> epreuveIds = requestUpdate.getEpreuves().stream()
                     .map(InscriptionInDto.ChampionShipInscription::getChampionshipId)
                     .toList();
-            Set<Epreuve> allEpreuveIn = epreuveRepository.findAllEpreuveIn(epreuveIds)
+            List<Epreuve> allEpreuveIn = epreuveRepository.findAllEpreuveWhereIdIn(epreuveIds)
                     .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", epreuveIds)));
 
             var epreuveAlreadyAssociated = allEpreuveIn.stream()

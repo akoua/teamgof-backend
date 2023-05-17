@@ -55,12 +55,12 @@ public class Epreuve extends Auditable<String> {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (!(obj instanceof Epreuve other)) return false;
-        return Objects.equals(getName(), other.getName()) && Objects.equals(getDiscipline().getName(), other.getDiscipline().getName());
+        return Objects.equals(getName(), other.getName()) && Objects.equals(getDiscipline().getId(), other.getDiscipline().getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getName(), getDiscipline().getName());
+        return Objects.hash(getName(), getDiscipline().getId());
     }
 
     @Override

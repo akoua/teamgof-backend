@@ -46,7 +46,7 @@ public class TeamService {
                 .withDepartement(request.getDepartement())
                 .withMotivation(request.getMotivation())
                 .withMembers(request.getMembers())
-                .withEpreuvesParticipated(findChampionShipsInDatabase(request.getDisciplineEpreuves()));
+                .withEpreuvesParticipated(new HashSet<>(findChampionShipsInDatabase(request.getDisciplineEpreuves())));
 
         setTeamRiders(team, ridersList, request.getMembers());
         return teamRepository.save(team).getId();
@@ -82,26 +82,25 @@ public class TeamService {
                 .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.TEAM_NOT_FOUND, String.format("with id %s", teamId)));
 
         List<Cavalier> ridersList = findRidersInDatabase(requestUpdate.getMembers());
-        Set<Epreuve> epreuveSet = findChampionShipsInDatabase(requestUpdate.getDisciplineEpreuves());
 
         team.setName(requestUpdate.getName());
         team.setDescription(requestUpdate.getDescription());
         team.setMotivation(requestUpdate.getMotivation());
         team.setDepartement(requestUpdate.getDepartement());
         team.setMembers(requestUpdate.getMembers());
-        team.setEpreuvesParticipated(epreuveSet);
+        team.setEpreuvesParticipated(new HashSet<>(findChampionShipsInDatabase(requestUpdate.getDisciplineEpreuves())));
 
         setTeamRiders(team, ridersList, requestUpdate.getMembers());
 
         return createTeamDto(team);
     }
 
-    private Set<Epreuve> findChampionShipsInDatabase(List<CreateTeamInDto.DisciplineEpreuveTeam> disciplineEpreuves) throws BusinessException {
+    private List<Epreuve> findChampionShipsInDatabase(List<CreateTeamInDto.DisciplineEpreuveTeam> disciplineEpreuves) throws BusinessException {
         List<Long> championsList = disciplineEpreuves
                 .stream()
                 .flatMap(ed -> ed.getChampionshipId().stream())
                 .toList();
-        return epreuveRepository.findAllEpreuveIn(championsList)
+        return epreuveRepository.findAllEpreuveWhereIdIn(championsList)
                 .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", championsList)));
     }
 

@@ -31,6 +31,14 @@ public class Precision extends Auditable<String> {
     @AllArgsConstructor
     public static class PrecisionDto {
         private PrecisionType precisionType;
-        private List<String> values;
+        private PrecisionValueDto values;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PrecisionValueDto {
+        private Double value;
+        private List<Long> epreuves;
     }
 }

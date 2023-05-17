@@ -14,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PrecisionInDto {
+    private List<Long> epreuveIds;
     private List<Precision.PrecisionDto> precisions;
 
 
