@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.controllers.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import istic.m2.project.gofback.entities.enums.MotivationType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -22,6 +23,7 @@ public class CreateTeamInDto {
     @Valid
     private List<TeamMember> members;
     @Valid
+    @Schema(description = "")
     private List<DisciplineEpreuveTeam> disciplineEpreuves;
 
     @AllArgsConstructor

@@ -5,6 +5,6 @@ import lombok.With;
 import java.io.Serializable;
 
 @With
-//@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
+//TODO firstName, lastName, email,{idepreuve, qualification}
 public record LoginOutDto(String accessToken, String refreshToken, long userId) implements Serializable {
 }

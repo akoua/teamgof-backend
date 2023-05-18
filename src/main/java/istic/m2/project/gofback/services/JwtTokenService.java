@@ -33,7 +33,7 @@ public class JwtTokenService {
         if (null != authentication) {
             jwt = buildJwt(authentication.getName());
         } else {
-            var cavalier = cavalierRepository.findCavalierByEmail(email)
+            var cavalier = cavalierRepository.findCavalierByEmailIgnoreCase(email)
                     .orElseThrow(() -> new BusinessException(MessageError.CAVALIER_NOT_FOUND, String.format(" with email %s", email)));
             jwt = buildJwt(cavalier.getEmail());
         }

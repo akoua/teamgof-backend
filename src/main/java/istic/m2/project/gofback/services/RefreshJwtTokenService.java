@@ -40,7 +40,7 @@ public class RefreshJwtTokenService {
     }
 
     public RefreshToken createRefreshToken(String email) throws BusinessException {
-        var cavalier = cavalierRepository.findCavalierByEmail(email)
+        var cavalier = cavalierRepository.findCavalierByEmailIgnoreCase(email)
                 .orElseThrow(() -> new BusinessException(MessageError.CAVALIER_NOT_FOUND, String.format(" with email %s", email)));
         deleteByUserId(cavalier.getId());
         RefreshToken refreshToken = new RefreshToken()

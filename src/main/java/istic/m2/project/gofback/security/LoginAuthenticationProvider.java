@@ -24,7 +24,7 @@ public class LoginAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
         String username = authentication.getName();
-        Cavalier cavalier = cavalierRepository.findCavalierByEmail(username)
+        Cavalier cavalier = cavalierRepository.findCavalierByEmailIgnoreCase(username)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("username %s not found", username)));
         if (passwordEncoder.matches(authentication.getCredentials().toString(), cavalier.getPwd())) {
             return new UsernamePasswordAuthenticationToken(authentication.getName(),
