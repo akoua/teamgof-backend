@@ -45,7 +45,8 @@ public class ProjectSecurity {
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/cavalier/**"),
                         new AntPathRequestMatcher("/api/v1/login/sign-in/**"),
                         new AntPathRequestMatcher("/api/v1/team/**"),
-                        new AntPathRequestMatcher("/api/v1/precisions/**")
+                        new AntPathRequestMatcher("/api/v1/precisions/**"),
+                        new AntPathRequestMatcher("/api/v1/disciplines/**")
                 )
                 .authenticated().and()
                 .authorizeHttpRequests()

@@ -9,5 +9,5 @@ import java.util.Optional;
 @Repository
 //@RepositoryRestResource()
 public interface DisciplineRepository extends JpaRepository<Discipline, Long> {
-    Optional<Discipline> findDisciplineByName(String name);
+    Optional<Discipline> findDisciplineByNameIgnoreCase(String name);
 }

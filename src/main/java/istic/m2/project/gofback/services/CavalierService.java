@@ -72,15 +72,15 @@ public class CavalierService {
         List<CavalierEpreuvePractice> cavalierEpreuvePractices = new ArrayList<>();
         List<CavalierEpreuvePractice> cavalierEpreuvePracticesAlready = new ArrayList<>();
 
-        Cavalier cavalier = cavalierRepository.findCavalierByEmail(requestUpdate.getEmail())
+        Cavalier cavalier = cavalierRepository.findCavalierByEmailIgnoreCase(requestUpdate.getEmail())
                 .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.CAVALIER_NOT_FOUND, String.format(" with email %s",
                         requestUpdate.getEmail())));
 
-        cavalier.setFirstName(requestUpdate.getFirstName().isBlank() ? cavalier.getFirstName() : requestUpdate.getFirstName());
-        cavalier.setLastName(requestUpdate.getLastName().isBlank() ? cavalier.getLastName() : requestUpdate.getLastName());
+        cavalier.setFirstName(requestUpdate.getFirstName().isBlank() ? cavalier.getFirstName() : requestUpdate.getFirstName().toLowerCase());
+        cavalier.setLastName(requestUpdate.getLastName().isBlank() ? cavalier.getLastName() : requestUpdate.getLastName().toLowerCase());
         cavalier.setEmail(requestUpdate.getEmail().isBlank() ? cavalier.getEmail() : requestUpdate.getEmail());
         cavalier.setNumberFfe(requestUpdate.getNumberFfe().isBlank() ? cavalier.getNumberFfe() : requestUpdate.getNumberFfe());
-        cavalier.setDescription(requestUpdate.getNumberFfe().isBlank() ? cavalier.getNumberFfe() : requestUpdate.getNumberFfe());
+        cavalier.setDescription(requestUpdate.getDescription().isBlank() ? cavalier.getDescription() : requestUpdate.getDescription());
         cavalier.setLocation(requestUpdate.getLocation().isBlank() ? cavalier.getLocation() : requestUpdate.getLocation());
         cavalier.setNiveau(requestUpdate.getNiveau().isBlank() ? cavalier.getNiveau() : requestUpdate.getNiveau());
 
