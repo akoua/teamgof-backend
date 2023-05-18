@@ -46,7 +46,7 @@ public class TeamService {
                 .withDepartement(request.getDepartement())
                 .withMotivation(request.getMotivation())
                 .withMembers(request.getMembers())
-                .withEpreuvesParticipated(new HashSet<>(findChampionShipsInDatabase(request.getDisciplineEpreuves())));
+                .withEpreuvesParticipated(new HashSet<>(findChampionShipsInDatabase(request.getChampionshipIds())));
 
         setTeamRiders(team, ridersList, request.getMembers());
         return teamRepository.save(team).getId();
@@ -88,20 +88,20 @@ public class TeamService {
         team.setMotivation(requestUpdate.getMotivation());
         team.setDepartement(requestUpdate.getDepartement());
         team.setMembers(requestUpdate.getMembers());
-        team.setEpreuvesParticipated(new HashSet<>(findChampionShipsInDatabase(requestUpdate.getDisciplineEpreuves())));
+        team.setEpreuvesParticipated(new HashSet<>(findChampionShipsInDatabase(requestUpdate.getChampionshipIds())));
 
         setTeamRiders(team, ridersList, requestUpdate.getMembers());
 
         return createTeamDto(team);
     }
 
-    private List<Epreuve> findChampionShipsInDatabase(List<CreateTeamInDto.DisciplineEpreuveTeam> disciplineEpreuves) throws BusinessException {
-        List<Long> championsList = disciplineEpreuves
-                .stream()
-                .flatMap(ed -> ed.getChampionshipId().stream())
-                .toList();
-        return epreuveRepository.findAllEpreuveWhereIdIn(championsList)
-                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", championsList)));
+    private List<Epreuve> findChampionShipsInDatabase(List<Long> epreuveIds) throws BusinessException {
+//        List<Long> championsList = disciplineEpreuves
+//                .stream()
+//                .flatMap(ed -> ed.getChampionshipId().stream())
+//                .toList();
+        return epreuveRepository.findAllEpreuveWhereIdIn(epreuveIds)
+                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", epreuveIds)));
     }
 
     private List<Cavalier> findRidersInDatabase(List<CreateTeamInDto.TeamMember> members) {

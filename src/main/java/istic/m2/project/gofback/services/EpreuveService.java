@@ -29,6 +29,8 @@ public class EpreuveService {
 
     @Transactional
     public List<EpreuveOutDto> addEpreuve(EpreuveInDto epreuve) throws BusinessException {
+
+
         var discipline = disciplineRepository.findDisciplineByNameIgnoreCase(epreuve.discipline())
                 .orElseThrow(() -> new BusinessException(MessageError.DISCIPLINE_NOT_FOUND, String.format(" with name %s", epreuve.discipline())));
 
