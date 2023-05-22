@@ -3,6 +3,8 @@ package istic.m2.project.gofback.entities;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import istic.m2.project.gofback.entities.enums.SessionType;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -78,7 +80,11 @@ public class Epreuve extends Auditable<String> {
     @Setter
     @With
     public static class Qualification {
+        @NotNull
+        @Min(0)
         private Integer qualificationCavalier;
+        @NotNull
+        @Min(0)
         private Integer qualificationEquide;
 
         @Override

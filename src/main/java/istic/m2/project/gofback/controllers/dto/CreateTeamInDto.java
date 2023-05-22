@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import istic.m2.project.gofback.entities.enums.MotivationType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,8 +22,8 @@ public class CreateTeamInDto {
     @Valid
     private List<TeamMember> members;
     @Valid
-    @Schema(description = "")
-    private List<DisciplineEpreuveTeam> disciplineEpreuves;
+    @Schema(description = "all championships which team compete")
+    private List<Long> championshipIds;
 
     @AllArgsConstructor
     @NoArgsConstructor
@@ -37,14 +36,6 @@ public class CreateTeamInDto {
         private String lastName;
         @NotBlank
         private String ffe;
-    }
-
-    @AllArgsConstructor
-    @NoArgsConstructor
-    @Data
-    public static class DisciplineEpreuveTeam {
-        @NotEmpty(message = "Set at least one championship")
-        private List<Long> championshipId;
     }
 
 }

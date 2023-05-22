@@ -9,4 +9,6 @@ import java.util.Optional;
 @Repository
 public interface ExclusionRepository extends JpaRepository<Exclusion, Long> {
     Optional<Exclusion> findExclusionByLabel(String label);
+
+    Boolean existsExclusionsByLabel(String label);
 }
