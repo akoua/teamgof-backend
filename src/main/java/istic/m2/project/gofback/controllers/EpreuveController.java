@@ -2,16 +2,14 @@ package istic.m2.project.gofback.controllers;
 
 import istic.m2.project.gofback.controllers.dto.EpreuveInDto;
 import istic.m2.project.gofback.controllers.dto.EpreuveOutDto;
+import istic.m2.project.gofback.controllers.dto.EpreuveUpdateInDto;
 import istic.m2.project.gofback.controllers.dto.ResponseDto;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.services.EpreuveService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 
@@ -22,8 +20,18 @@ public class EpreuveController {
 
     private final EpreuveService epreuveService;
 
+    @GetMapping(path = "{id}")
+    public ResponseEntity<ResponseDto<EpreuveOutDto>> getEpreuveInfos(@PathVariable Long id) throws BusinessException {
+        return ResponseEntity.ok(new ResponseDto<>(epreuveService.getEpreuveInfos(id)));
+    }
+
     @PostMapping(path = "add")
     public ResponseEntity<ResponseDto<ArrayList<EpreuveOutDto>>> addEpreuve(@RequestBody @Valid EpreuveInDto epreuve) throws BusinessException {
         return ResponseEntity.ok(new ResponseDto<>(new ArrayList<>(epreuveService.addEpreuve(epreuve))));
+    }
+
+    @PutMapping(path = "update")
+    public ResponseEntity<ResponseDto<EpreuveOutDto>> updateEpreuve(@RequestBody @Valid EpreuveUpdateInDto epreuve) throws BusinessException {
+        return ResponseEntity.ok(new ResponseDto<>(epreuveService.updateEpreuve(epreuve)));
     }
 }

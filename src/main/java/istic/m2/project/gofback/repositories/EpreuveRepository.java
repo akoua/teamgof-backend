@@ -1,6 +1,7 @@
 package istic.m2.project.gofback.repositories;
 
 import istic.m2.project.gofback.entities.Epreuve;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,10 @@ public interface EpreuveRepository extends JpaRepository<Epreuve, Long> {
 
     @Query(value = "SELECT e FROM Epreuve e WHERE e.id in (:ids)")
     Optional<List<Epreuve>> findAllEpreuveWhereIdIn(List<Long> ids);
+
+    @EntityGraph(attributePaths = {"precision", "exclusions", "helpFiles"})
+    @Query(value = "select e from Epreuve e WHERE e.id = :championshipId")
+    Optional<Epreuve> findEpreuveAndOtherInfosById(Long championshipId);
 
 //    @Query(value = "SELECT e FROM Epreuve e WHERE e.id in (:ids)")
 //    Optional<List<Epreuve>> findAllEpreuveWhereIdIn(List<Long> ids);
