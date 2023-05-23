@@ -79,33 +79,26 @@ public class EpreuveService {
         epreuve.setSession(epreuveDto.session());
         epreuve.setQualification(epreuveDto.qualification());
         epreuve.setLastModifiedDate(new Date());
+
+        Exclusion exclu = exclusionRepository.findExclusionByLabel(epreuveDto.exclusion()).orElse(null);
         epreuve.getExclusions().stream()
                 .findFirst()
                 .ifPresentOrElse(exclusion -> {
                             if (!exclusion.getLabel().equals(epreuveDto.exclusion())) {
-                                Exclusion exclu = exclusionRepository.findExclusionByLabel(epreuveDto.exclusion()).orElse(null);
-                                if (null != exclu) {
-                                    epreuve.setExclusions(Set.of(exclu));
-                                } else {
-                                    epreuve.setExclusions(Set.of(new Exclusion().withLabel(epreuveDto.exclusion())));
-                                }
+                                setChampionshipExclusion(epreuve, epreuveDto, exclu);
                             }
                         },
-                        () -> epreuve.setExclusions(Set.of(new Exclusion().withLabel(epreuveDto.exclusion()))));
+                        () -> setChampionshipExclusion(epreuve, epreuveDto, exclu));
+
+        HelpFile help = helpFileRepository.findHelpFileByUrl(epreuveDto.helpFileUrl()).orElse(null);
         epreuve.getHelpFiles().stream()
                 .findFirst()
                 .ifPresentOrElse(helpFile -> {
                             if (!helpFile.getUrl().equals(epreuveDto.helpFileUrl())) {
-                                HelpFile help = helpFileRepository.findHelpFileByUrl(epreuveDto.helpFileUrl()).orElse(null);
-                                if (null != help) {
-                                    epreuve.setHelpFiles(Set.of(help));
-                                } else {
-                                    epreuve.setHelpFiles(Set.of(new HelpFile().withUrl(epreuveDto.helpFileUrl())));
-                                }
-
+                                setChampionHelpFile(epreuve, epreuveDto, help);
                             }
                         },
-                        () -> epreuve.setHelpFiles(Set.of(new HelpFile().withUrl(epreuveDto.helpFileUrl()))));
+                        () -> setChampionHelpFile(epreuve, epreuveDto, help));
         if (null != epreuve.getPrecision()) {
             epreuve.getPrecision().setDetails(epreuveDto.precisions());
         } else {
@@ -115,6 +108,23 @@ public class EpreuveService {
 
 
         return createEpreuveOutDto(epreuve);
+    }
+
+    private void setChampionshipExclusion(Epreuve epreuve, EpreuveUpdateInDto epreuveDto, Exclusion exclu) {
+        if (null != exclu) {
+            epreuve.setExclusions(Set.of(exclu));
+        } else {
+            epreuve.setExclusions(Set.of(new Exclusion().withLabel(epreuveDto.exclusion())));
+        }
+    }
+
+    private void setChampionHelpFile(Epreuve epreuve, EpreuveUpdateInDto epreuveDto, HelpFile help) {
+        epreuve.setLastModifiedDate(new Date());
+        if (null != help) {
+            epreuve.setHelpFiles(Set.of(help));
+        } else {
+            epreuve.setHelpFiles(Set.of(new HelpFile().withUrl(epreuveDto.helpFileUrl())));
+        }
     }
 
     private List<EpreuveOutDto> createListEpreuveOutDto(List<Epreuve> epreuves) {
