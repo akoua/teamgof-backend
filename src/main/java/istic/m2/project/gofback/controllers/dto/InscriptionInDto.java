@@ -1,9 +1,7 @@
 package istic.m2.project.gofback.controllers.dto;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -19,6 +17,9 @@ public class InscriptionInDto {
 
     @Getter
     @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @With
     public static class ChampionShipInscription {
         @NotNull
         private Long championshipId;

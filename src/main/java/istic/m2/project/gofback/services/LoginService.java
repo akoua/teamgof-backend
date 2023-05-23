@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +78,22 @@ public class LoginService {
      */
     public LoginOutDto connexionService(@Valid LoginInDto loginInDto) throws BusinessException {
         var refreshToken = refreshJwtTokenService.createRefreshToken(loginInDto.email());
+        var cavalier = refreshToken.getCavalier();
+        List<CavalierEpreuvePractice> cavalierEpreuvePractices = cavalierEpreuvePracticeRepository.findCavalierEpreuvePracticeByCavalierId(cavalier.getId())
+                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_CAVALIER_PRACTICE_NOT_FOUND, String.format("with cavalier id %s", cavalier.getId())));
         return new LoginOutDto(jwtTokenService.generateToken(loginInDto.email()),
-                refreshToken.getToken(), refreshToken.getCavalier().getId());
+                refreshToken.getToken(), new LoginOutDto.UserLoginInfoOutDto()
+                .withUserId(cavalier.getId())
+                .withFirstName(cavalier.getFirstName())
+                .withLastName(cavalier.getLastName())
+                .withEmail(cavalier.getEmail())
+                .withEpreuves(cavalierEpreuvePractices
+                        .stream()
+                        .map(etp -> new InscriptionInDto.ChampionShipInscription()
+                                .withChampionshipId(etp.getEpreuve().getId())
+                                .withRiderScore(etp.getQualificationCavalier()))
+                        .collect(Collectors.toList())
+                )
+        );
     }
 }

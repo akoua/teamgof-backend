@@ -8,6 +8,7 @@ import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.services.LoginService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,7 +23,7 @@ public class LoginController {
 
     @PostMapping(path = "sign-up")
     public ResponseEntity<ResponseDto<String>> inscription(@RequestBody InscriptionInDto value) throws BusinessException {
-        return ResponseEntity.ok(new ResponseDto<>(loginService.inscriptionService(value)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto<>(loginService.inscriptionService(value)));
     }
 
     @PostMapping(path = "sign-in")

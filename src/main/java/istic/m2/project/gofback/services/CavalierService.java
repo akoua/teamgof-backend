@@ -89,11 +89,15 @@ public class CavalierService {
             cavalierEpreuvePracticeRepository.deleteAllByCavalierId(cavalier.getId());
         } else {
 
+//            cavalierEpreuvePracticeRepository.deleteAllByCavalierId(cavalier.getId());
             List<Long> epreuveIds = requestUpdate.getEpreuves().stream()
                     .map(InscriptionInDto.ChampionShipInscription::getChampionshipId)
                     .toList();
             List<Epreuve> allEpreuveIn = epreuveRepository.findAllEpreuveWhereIdIn(epreuveIds)
                     .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", epreuveIds)));
+
+//            List<CavalierEpreuvePractice> cavalierEpreuvePracticesFromBd = cavalierEpreuvePracticeRepository.findCavalierEpreuvePracticeByCavalierId(cavalier.getId())
+//                    .orElse(null);
 
             var epreuveAlreadyAssociated = allEpreuveIn.stream()
                     .filter(epreuve -> cavalier.getEpreuveCavalierPractice().contains(epreuve))
@@ -101,6 +105,7 @@ public class CavalierService {
 
             allEpreuveIn.removeAll(epreuveAlreadyAssociated);
 
+            //if we have a new championship which rider not already practice
             allEpreuveIn
                     .forEach(e -> requestUpdate.getEpreuves().stream()
                             .filter(epreuveIns -> epreuveIns.getChampionshipId().equals(e.getId()))
@@ -109,20 +114,25 @@ public class CavalierService {
                                     .withEpreuve(e)
                                     .withQualificationCavalier(epreuveIns.getRiderScore())
                             )));
+            if (!cavalierEpreuvePractices.isEmpty()) {
+                cavalierEpreuvePracticeRepository.saveAll(cavalierEpreuvePractices);
+            }
+
             epreuveAlreadyAssociated.forEach(e -> {
                 var epreuve = requestUpdate.getEpreuves()
                         .stream().filter(ep -> ep.getChampionshipId().equals(e.getId()))
-                        .toList();
+                        .findFirst()
+                        .orElse(new InscriptionInDto.ChampionShipInscription());
                 cavalierEpreuvePracticesAlready.add(new CavalierEpreuvePractice()
                         .withCavalier(cavalier)
                         .withEpreuve(e)
-                        .withQualificationCavalier(epreuve.get(0).getRiderScore()));
-                cavalierEpreuvePracticeRepository.updateCavalierEpreuvePractice(e.getId(), epreuve.get(0).getRiderScore());
+                        .withQualificationCavalier(epreuve.getRiderScore()));
+                
+                cavalierEpreuvePracticeRepository.updateCavalierEpreuvePractice(e.getId(), cavalier.getId(), epreuve.getRiderScore());
             });
         }
 
-        cavalierRepository.save(cavalier);
-        cavalierEpreuvePracticeRepository.saveAll(cavalierEpreuvePractices);
+//        cavalierRepository.save(cavalier);
 
         return buildCavalierOwnInfos(cavalier, Stream.concat(cavalierEpreuvePractices.stream(),
                 cavalierEpreuvePracticesAlready.stream()).toList());
