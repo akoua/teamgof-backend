@@ -22,7 +22,7 @@ public class LoginController {
     private final LoginService loginService;
 
     @PostMapping(path = "sign-up")
-    public ResponseEntity<ResponseDto<String>> inscription(@RequestBody InscriptionInDto value) throws BusinessException {
+    public ResponseEntity<ResponseDto<String>> inscription(@RequestBody @Valid InscriptionInDto value) throws BusinessException {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseDto<>(loginService.inscriptionService(value)));
     }
 

@@ -3,6 +3,7 @@ package istic.m2.project.gofback.services;
 import istic.m2.project.gofback.controllers.dto.CavalierOwnInfosDtoOut;
 import istic.m2.project.gofback.controllers.dto.CavalierUpdateInDto;
 import istic.m2.project.gofback.controllers.dto.InscriptionInDto;
+import istic.m2.project.gofback.entities.Auditable;
 import istic.m2.project.gofback.entities.Cavalier;
 import istic.m2.project.gofback.entities.CavalierEpreuvePractice;
 import istic.m2.project.gofback.entities.Epreuve;
@@ -12,17 +13,22 @@ import istic.m2.project.gofback.exceptions.MessageError;
 import istic.m2.project.gofback.repositories.CavalierEpreuvePracticeRepository;
 import istic.m2.project.gofback.repositories.CavalierRepository;
 import istic.m2.project.gofback.repositories.EpreuveRepository;
+import istic.m2.project.gofback.repositories.dto.CavalierInfosProjectionDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CavalierService {
@@ -32,7 +38,7 @@ public class CavalierService {
     private final EpreuveRepository epreuveRepository;
     private final ModelMapper modelMapper;
 
-    public CavalierOwnInfosDtoOut findUserById(Long id) throws BusinessException {
+    public CavalierOwnInfosDtoOut findUserInfos(Long id) throws BusinessException {
 
 
         var cavalierInfosProjections = cavalierEpreuvePracticeRepository.findCavalierByIdAndEpreuvePractice(id)
@@ -41,26 +47,40 @@ public class CavalierService {
 
         CavalierOwnInfosDtoOut infos = new CavalierOwnInfosDtoOut();
         List<CavalierOwnInfosDtoOut.CavalierEpreuve> epreuves = new ArrayList<>();
-        cavalierInfosProjections.forEach(cavalierInfos -> {
-            if (null == infos.getFirstName()) {
-                infos.setId(cavalierInfos.getId());
-                infos.setFirstName(cavalierInfos.getFirstName());
-                infos.setLastName(cavalierInfos.getLastName());
-                infos.setBirthDate(cavalierInfos.getBirthDate());
-                infos.setEmail(cavalierInfos.getEmail());
-                infos.setNumberFfe(cavalierInfos.getNumberFfe());
-                infos.setDescription(cavalierInfos.getDescription());
-                infos.setLocation(cavalierInfos.getLocation());
-                infos.setNiveau(cavalierInfos.getNiveau());
-            }
-            epreuves.add(new CavalierOwnInfosDtoOut.CavalierEpreuve()
-                    .withQualificationCavalier(cavalierInfos.getQualificationCavalier())
-                    .withName(cavalierInfos.getEpreuveName()));
+        if (cavalierInfosProjections.isEmpty()) {
+            Cavalier cavalier = cavalierRepository.findById(id)
+                    .orElseThrow(() ->
+                            ErrorUtils.throwBusnessException(MessageError.CAVALIER_NOT_FOUND, String.format(" with id %s", id)));
+
+            setCavalierInfos(infos, modelMapper.map(cavalier, CavalierInfosProjectionDto.class));
+
+        } else {
+            cavalierInfosProjections.forEach(cavalierInfos -> {
+                if (null == infos.getFirstName()) {
+                    setCavalierInfos(infos, cavalierInfos);
+                }
+                epreuves.add(new CavalierOwnInfosDtoOut.CavalierEpreuve()
+                        .withQualificationCavalier(cavalierInfos.getQualificationCavalier())
+                        .withName(cavalierInfos.getEpreuveName()));
 
 
-        });
+            });
+        }
+
         infos.setEpreuves(epreuves);
         return infos;
+    }
+
+    private void setCavalierInfos(CavalierOwnInfosDtoOut infos, CavalierInfosProjectionDto cavalierInfos) {
+        infos.setId(cavalierInfos.getId());
+        infos.setFirstName(cavalierInfos.getFirstName());
+        infos.setLastName(cavalierInfos.getLastName());
+        infos.setBirthDate(cavalierInfos.getBirthDate());
+        infos.setEmail(cavalierInfos.getEmail());
+        infos.setNumberFfe(cavalierInfos.getNumberFfe());
+        infos.setDescription(cavalierInfos.getDescription());
+        infos.setLocation(cavalierInfos.getLocation());
+        infos.setNiveau(cavalierInfos.getNiveau());
     }
 
     /**
@@ -89,15 +109,14 @@ public class CavalierService {
             cavalierEpreuvePracticeRepository.deleteAllByCavalierId(cavalier.getId());
         } else {
 
-//            cavalierEpreuvePracticeRepository.deleteAllByCavalierId(cavalier.getId());
             List<Long> epreuveIds = requestUpdate.getEpreuves().stream()
                     .map(InscriptionInDto.ChampionShipInscription::getChampionshipId)
                     .toList();
             List<Epreuve> allEpreuveIn = epreuveRepository.findAllEpreuveWhereIdIn(epreuveIds)
                     .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", epreuveIds)));
 
-//            List<CavalierEpreuvePractice> cavalierEpreuvePracticesFromBd = cavalierEpreuvePracticeRepository.findCavalierEpreuvePracticeByCavalierId(cavalier.getId())
-//                    .orElse(null);
+            List<CavalierEpreuvePractice> cavalierEpreuvePracticesFromBd = cavalierEpreuvePracticeRepository.findCavalierEpreuvePracticeByCavalierId(cavalier.getId())
+                    .orElse(new ArrayList<>());
 
             var epreuveAlreadyAssociated = allEpreuveIn.stream()
                     .filter(epreuve -> cavalier.getEpreuveCavalierPractice().contains(epreuve))
@@ -118,7 +137,7 @@ public class CavalierService {
                 cavalierEpreuvePracticeRepository.saveAll(cavalierEpreuvePractices);
             }
 
-            epreuveAlreadyAssociated.forEach(e -> {
+            for (Epreuve e : epreuveAlreadyAssociated) {
                 var epreuve = requestUpdate.getEpreuves()
                         .stream().filter(ep -> ep.getChampionshipId().equals(e.getId()))
                         .findFirst()
@@ -127,15 +146,33 @@ public class CavalierService {
                         .withCavalier(cavalier)
                         .withEpreuve(e)
                         .withQualificationCavalier(epreuve.getRiderScore()));
-                
-                cavalierEpreuvePracticeRepository.updateCavalierEpreuvePractice(e.getId(), cavalier.getId(), epreuve.getRiderScore());
-            });
-        }
 
-//        cavalierRepository.save(cavalier);
+
+                if (!cavalierEpreuvePracticesFromBd.isEmpty()) {
+
+                    cavalierEpreuvePracticesFromBd.stream()
+                            .filter(cep -> cep.getEpreuve().getId().equals(e.getId()))
+                            .findFirst()
+                            .ifPresent(cep -> {
+                                cep.setQualificationCavalier(epreuve.getRiderScore());
+                                cep.setLastModifiedDate(new Date());
+                                cavalierEpreuvePracticesFromBd.remove(cep);
+                            });
+                }
+            }
+            int i = cavalierEpreuvePracticeRepository.deleteAllCavalierEpreuvePracticeByIds(cavalierEpreuvePracticesFromBd.stream()
+                    .map(Auditable::getId)
+                    .toList());
+            log.info(String.format("number of cavalierEpreuvepractice deleted: %s", i));
+        }
 
         return buildCavalierOwnInfos(cavalier, Stream.concat(cavalierEpreuvePractices.stream(),
                 cavalierEpreuvePracticesAlready.stream()).toList());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    void updateCavalierEpreuvePractice(Long idChampionship, Long idCavalier, Integer newValue) {
+        cavalierEpreuvePracticeRepository.updateCavalierEpreuvePractice(idChampionship, idCavalier, newValue);
     }
 
 
