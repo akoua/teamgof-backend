@@ -45,7 +45,7 @@ public class ProjectSecurity {
                 }).and()
                 .authorizeHttpRequests()
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/cavalier/**"),
-                        new AntPathRequestMatcher("/api/v1/login/sign-in/**"),
+//                        new AntPathRequestMatcher("/api/v1/login/sign-in/**"),
                         new AntPathRequestMatcher("/api/v1/team/**"),
                         new AntPathRequestMatcher("/api/v1/precisions/**"),
                         new AntPathRequestMatcher("/api/v1/disciplines/**"),
@@ -53,7 +53,7 @@ public class ProjectSecurity {
                 )
                 .authenticated().and()
                 .authorizeHttpRequests()
-                .requestMatchers(new AntPathRequestMatcher("/api/v1/login/sign-up/**"),
+                .requestMatchers(new AntPathRequestMatcher("/api/v1/login/**"),
                         new AntPathRequestMatcher("/api/v1/token/**"),
                         new AntPathRequestMatcher("/v3/api-docs/**"),
                         new AntPathRequestMatcher("/swagger-ui.html"),
