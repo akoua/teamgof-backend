@@ -29,4 +29,13 @@ public class CavalierEpreuvePractice extends Auditable<String> {
 
     @Column(name = "qualification_cavalier", nullable = false)
     private Integer qualificationCavalier;
+
+    @Override
+    public String toString() {
+        return "CavalierEpreuvePractice{" +
+                "cavalier=" + cavalier.getId() +
+                ", epreuve=" + epreuve.getId() +
+                ", qualificationCavalier=" + qualificationCavalier +
+                '}';
+    }
 }

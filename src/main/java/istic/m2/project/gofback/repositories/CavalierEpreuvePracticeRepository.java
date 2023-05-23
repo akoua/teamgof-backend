@@ -29,4 +29,8 @@ public interface CavalierEpreuvePracticeRepository extends JpaRepository<Cavalie
     void updateCavalierEpreuvePractice(Long idChampionship, Long idCavalier, Integer newValue);
 
     int deleteAllByCavalierId(Long id);
+
+    @Modifying
+    @Query("delete from CavalierEpreuvePractice cev where cev.id in (:idsCavalierEpreuvePractice)")
+    int deleteAllCavalierEpreuvePracticeByIds(List<Long> idsCavalierEpreuvePractice);
 }

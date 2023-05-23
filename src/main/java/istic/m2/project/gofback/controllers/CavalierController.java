@@ -24,7 +24,7 @@ public class CavalierController {
 
         return ResponseEntity.ok()
                 .cacheControl(CacheControl.maxAge(Duration.ofSeconds(60)))
-                .body(new ResponseDto<>(cavalierService.findUserById(id)));
+                .body(new ResponseDto<>(cavalierService.findUserInfos(id)));
     }
 
     @PutMapping("update/infos")

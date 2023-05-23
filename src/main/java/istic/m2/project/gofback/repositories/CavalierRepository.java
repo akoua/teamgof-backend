@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface CavalierRepository extends JpaRepository<Cavalier, Long> {
+    //    @EntityGraph(attributePaths = {"epreuveCavalierPractice"})
     Optional<Cavalier> findCavalierByEmailIgnoreCase(String email);
 
 //    @EntityGraph(attributePaths = {"poneys", "epreuveCavalierPractice", "teamBelong"})
