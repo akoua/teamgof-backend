@@ -25,8 +25,8 @@ public interface CavalierEpreuvePracticeRepository extends JpaRepository<Cavalie
     Optional<List<CavalierEpreuvePractice>> findCavalierEpreuvePracticeByCavalierId(Long cavalierId);
 
     @Modifying
-    @Query("update CavalierEpreuvePractice c SET c.qualificationCavalier = :newValue WHERE c.id = :id ")
-    void updateCavalierEpreuvePractice(Long id, Integer newValue);
+    @Query("update CavalierEpreuvePractice c SET c.qualificationCavalier = :newValue WHERE (c.epreuve.id =:idChampionship or c.cavalier.id =:idCavalier) ")
+    void updateCavalierEpreuvePractice(Long idChampionship, Long idCavalier, Integer newValue);
 
     int deleteAllByCavalierId(Long id);
 }
