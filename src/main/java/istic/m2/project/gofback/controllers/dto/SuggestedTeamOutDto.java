@@ -1,6 +1,8 @@
 package istic.m2.project.gofback.controllers.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import istic.m2.project.gofback.entities.enums.MotivationType;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,9 +16,32 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SuggestedTeamOutDto implements Serializable {
-    private TeamOutDto team;
-    private String discipline;
-    private List<SuggestedTeamEpreuveDto> epreuves;
+    private List<SuggestedTeamDto> teams;
+    private List<SuggestedTeamDisciplineDto> disciplines;
+
+
+    @With
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SuggestedTeamDto {
+        private long id;
+        private String name;
+        private String description;
+        private MotivationType motivation = MotivationType.DECOUVERTE;
+        private String departement;
+        @Valid
+        private List<CreateTeamInDto.TeamMember> members;
+    }
+
+    @With
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SuggestedTeamDisciplineDto {
+        private String discipline;
+        private List<SuggestedTeamEpreuveDto> epreuves;
+    }
 
     @With
     @Data
@@ -28,7 +53,7 @@ public class SuggestedTeamOutDto implements Serializable {
         @Schema(description = "the total remaining point to need to be qualified to championship")
         private double remainingPoint;
         @Schema(description = "All championship where rider can be win remaining point")
-        private List<ChampionshipSuggestedTeam> championships;
+        private List<String> championships;
     }
 
     @With

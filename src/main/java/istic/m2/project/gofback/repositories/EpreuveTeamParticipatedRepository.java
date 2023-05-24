@@ -16,7 +16,7 @@ public interface EpreuveTeamParticipatedRepository extends JpaRepository<Epreuve
     @Query("select etp from EpreuveTeamParticipated etp")
     Optional<List<EpreuveTeamParticipated>> findAllTeamsAndEpreuve();
 
-    @EntityGraph(attributePaths = {"team", "epreuve"})
+    @EntityGraph(attributePaths = {"team", "team.epreuvesParticipated", "epreuve"})
     @Query("select ept from EpreuveTeamParticipated ept where ept.epreuve.id in (:championshipIds)")
     Optional<List<EpreuveTeamParticipated>> findAllTeamsWhereEpreuveParticipatedAtLeastInChampionShip(List<Long> championshipIds);
 }

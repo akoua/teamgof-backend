@@ -20,6 +20,8 @@ public class InscriptionInDto {
     private String email;
     @NotBlank
     private String pwd;
+    @NotBlank
+    private String location;
 
 
     @Getter

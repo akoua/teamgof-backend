@@ -55,6 +55,7 @@ public class LoginService {
                 .withLastName(inscriptionInDto.getLastname())
                 .withEmail(inscriptionInDto.getEmail())
                 .withPwd(passwordEncoder.encode(inscriptionInDto.getPwd()))
+                .withLocation(inscriptionInDto.getLocation())
                 .withEpreuveCavalierPractice(new HashSet<>(allEpreuveIn));
 
         Cavalier finalCavalier = cavalier;
