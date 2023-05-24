@@ -19,7 +19,7 @@ public interface CavalierEpreuvePracticeRepository extends JpaRepository<Cavalie
             "WHERE c.id = :id ")
     Optional<List<CavalierInfosProjectionDto>> findCavalierByIdAndEpreuvePractice(Long id);
 
-    @EntityGraph(attributePaths = {"epreuve"})
+    @EntityGraph(attributePaths = {"epreuve", "epreuve.discipline"})
     @Query("select cep from CavalierEpreuvePractice cep join Cavalier c on c.id = cep.cavalier.id " +
             "where cep.cavalier.id = :cavalierId")
     Optional<List<CavalierEpreuvePractice>> findCavalierEpreuvePracticeByCavalierId(Long cavalierId);
