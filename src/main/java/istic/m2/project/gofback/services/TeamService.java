@@ -13,6 +13,7 @@ import istic.m2.project.gofback.exceptions.MessageError;
 import istic.m2.project.gofback.repositories.CavalierRepository;
 import istic.m2.project.gofback.repositories.EpreuveRepository;
 import istic.m2.project.gofback.repositories.TeamRepository;
+import istic.m2.project.gofback.repositories.paging.OffsetLimitPageRequest;
 import istic.m2.project.gofback.repositories.paging.PagingHelper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,14 +61,16 @@ public class TeamService {
      * @param url        the url
      * @return an instance {@link List<TeamOutDto>}
      */
+    @Transactional
     public ResponseDto<ArrayList<TeamOutDto>> getAllTeams(Integer beginIndex, Integer endIndex, String url) {
 
         int paginationDefaultPageSize = appConfig.getPaginationDefaultPageSize();
 
         int nbResults = PagingHelper.getNbResults(beginIndex, endIndex, paginationDefaultPageSize);
 
-        Page<Team> allTeamsAndEpreuve = teamRepository.findAllTeamsAndEpreuvePagineable(beginIndex,
-                nbResults, Sort.by("createdDate").descending());
+        Page<Team> allTeamsAndEpreuve = teamRepository.findAllTeamsAndEpreuveWithPagineable(
+                OffsetLimitPageRequest.of(beginIndex, nbResults, Sort.by("createdDate").descending()));
+        
         ResponseDto.PagingDto paging = PagingHelper.getPagingInfo(beginIndex, endIndex, nbResults,
                 paginationDefaultPageSize, Math.toIntExact(allTeamsAndEpreuve.getTotalElements()),
                 url, Team.class.getSimpleName());
@@ -96,10 +99,6 @@ public class TeamService {
     }
 
     private List<Epreuve> findChampionShipsInDatabase(List<Long> epreuveIds) throws BusinessException {
-//        List<Long> championsList = disciplineEpreuves
-//                .stream()
-//                .flatMap(ed -> ed.getChampionshipId().stream())
-//                .toList();
         return epreuveRepository.findAllEpreuveWhereIdIn(epreuveIds)
                 .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", epreuveIds)));
     }
@@ -168,6 +167,7 @@ public class TeamService {
                         (mapIn, mapOut) -> mapOut.putAll(mapIn));
 
         return new TeamOutDto()
+                .withId(team.getId())
                 .withName(team.getName())
                 .withDescription(team.getDescription())
                 .withDepartement(team.getDepartement())
