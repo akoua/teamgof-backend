@@ -47,10 +47,10 @@ public class EpreuveService {
                                 .withDiscipline(discipline)
                                 .withQualification(new Epreuve.Qualification(epreuve.qualification().getQualificationCavalier(),
                                         epreuve.qualification().getQualificationEquide()))
-                                .withExclusions(null != exclusion ? Set.of(exclusion) :
-                                        Set.of(new Exclusion().withLabel(epreuve.exclusion())))
-                                .withHelpFiles(null != helpFile ? Set.of(helpFile) :
-                                        Set.of(new HelpFile().withUrl(epreuve.helpFileUrl())))));
+                                .withExclusions(null != exclusion ? Set.of(exclusion) : (epreuve.exclusion().isEmpty() ?
+                                        Set.of() : Set.of(new Exclusion().withLabel(epreuve.exclusion()))))
+                                .withHelpFiles(null != helpFile ? Set.of(helpFile) : (epreuve.helpFileUrl().isEmpty()) ?
+                                        Set.of() : Set.of(new HelpFile().withUrl(epreuve.helpFileUrl())))));
 
 
         List<Epreuve> epreuvesSave = epreuveRepository.saveAll(epreuvesToSave);
