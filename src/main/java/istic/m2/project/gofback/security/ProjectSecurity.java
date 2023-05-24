@@ -46,7 +46,8 @@ public class ProjectSecurity {
                 .authorizeHttpRequests()
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/cavalier/**"),
 //                        new AntPathRequestMatcher("/api/v1/login/sign-in/**"),
-                        new AntPathRequestMatcher("/api/v1/team/**"),
+                        new AntPathRequestMatcher("/api/v1/team/create"),
+                        new AntPathRequestMatcher("/api/v1/team/update/{teamId}"),
                         new AntPathRequestMatcher("/api/v1/precisions/**"),
                         new AntPathRequestMatcher("/api/v1/disciplines/**"),
                         new AntPathRequestMatcher("/api/v1/epreuves/**"),
@@ -61,6 +62,7 @@ public class ProjectSecurity {
                         new AntPathRequestMatcher("/swagger-ui/**"),
                         new AntPathRequestMatcher("/disciplines/**"),
                         new AntPathRequestMatcher("/epreuves/**"),
+                        new AntPathRequestMatcher("/api/v1/team/allTeams"),
                         //TODO must change
                         new AntPathRequestMatcher("/api/v1/epreuves/add/**")
                 )

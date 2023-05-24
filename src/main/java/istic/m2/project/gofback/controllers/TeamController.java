@@ -47,7 +47,7 @@ public class TeamController {
 
     @PostMapping("create")
     @Operation(description = "Create team")
-    public ResponseEntity<ResponseDto<Long>> createTeam(@RequestBody @Valid CreateTeamInDto request) throws BusinessException, IllegalAccessException {
+    public ResponseEntity<ResponseDto<TeamOutDto>> createTeam(@RequestBody @Valid CreateTeamInDto request) throws BusinessException, IllegalAccessException {
 
         //TODO return team created
         return ResponseEntity.ok()

@@ -36,7 +36,8 @@ public class TeamService {
     private final ModelMapper modelMapper;
     private final AppConfig appConfig;
 
-    public Long createTeam(@Valid CreateTeamInDto request) throws BusinessException {
+    @Transactional
+    public TeamOutDto createTeam(@Valid CreateTeamInDto request) throws BusinessException {
 
 
         List<Cavalier> ridersList = findRidersInDatabase(request.getMembers());
@@ -50,7 +51,7 @@ public class TeamService {
                 .withEpreuvesParticipated(new HashSet<>(findChampionShipsInDatabase(request.getChampionshipIds())));
 
         setTeamRiders(team, ridersList, request.getMembers());
-        return teamRepository.save(team).getId();
+        return createTeamDto(teamRepository.save(team));
     }
 
     /**
@@ -70,7 +71,7 @@ public class TeamService {
 
         Page<Team> allTeamsAndEpreuve = teamRepository.findAllTeamsAndEpreuveWithPagineable(
                 OffsetLimitPageRequest.of(beginIndex, nbResults, Sort.by("createdDate").descending()));
-        
+
         ResponseDto.PagingDto paging = PagingHelper.getPagingInfo(beginIndex, endIndex, nbResults,
                 paginationDefaultPageSize, Math.toIntExact(allTeamsAndEpreuve.getTotalElements()),
                 url, Team.class.getSimpleName());

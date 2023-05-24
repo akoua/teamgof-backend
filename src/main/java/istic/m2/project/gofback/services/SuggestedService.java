@@ -13,10 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -122,7 +119,7 @@ public class SuggestedService {
         } else {
             //if not we use the precision to verify
             log.info(String.format("Precision is not empty"));
-
+            List<String> championshipsToCompete = new ArrayList<>();
             precision.getDetails()
                     .forEach(detail -> {
 
@@ -130,6 +127,9 @@ public class SuggestedService {
                                 .filter(cep -> detail.getValues().getEpreuves().stream()
                                         .anyMatch(epreuveId -> epreuveId.equals(cep.getEpreuve().getId())))
                                 .toList();
+                        championshipsToCompete.addAll(otherCavalierEpreuvePracticesPercent.stream()
+                                .map(cep -> cep.getEpreuve().getName()
+                                        .toUpperCase()).toList());
 
                         if (PrecisionType.DISCIPLINEPERCENTAGE.equals(detail.getPrecisionType())) {
                             List<Epreuve> epreuvesPercent = epreuvesTeam.stream()
@@ -157,35 +157,29 @@ public class SuggestedService {
                                     "Minimal condition validated for championship %s",
                                     "Minimal condition not already validated for championship %s but it's rest %s points in %s"
                             );
+
                             if (suggestedTeamOutDto.getDisciplines().isEmpty()) {
                                 log.info("Minimal condition empty");
+                                SuggestedTeamOutDto.SuggestedTeamDisciplineDto suggestedTeamDisciplineDto = setSuggestedPrecision(new SuggestedTeamOutDto.SuggestedTeamDisciplineDto(),
+                                        currentEpreuve);
+                                suggestedTeamDisciplineDto.getEpreuves().stream().findFirst()
+                                        .ifPresent(ste -> ste.setMinimalCondition(new SuggestedTeamOutDto.MinimalConditionSuggestedTeam()
+                                                .withValid(message.keySet().stream().findFirst().orElse(false))
+                                                .withReason(message.values().stream().findFirst()
+                                                        .orElse("error during computing"))));
                                 suggestedTeamOutDto.getDisciplines().add(
-                                        setSuggestedPrecisionWhenItIsMinimalCondition(new SuggestedTeamOutDto.SuggestedTeamDisciplineDto(),
-                                                currentEpreuve, message));
+                                        suggestedTeamDisciplineDto
+                                );
                             } else {
                                 log.info("Minimal condition not empty");
-//                                suggestedTeamOutDto.getDisciplines()
-//                                                .stream()
-//                                                        .filter(std -> {
-//                                                            std.getDiscipline()
-//                                                        })
-                                setSuggestedPrecisionWhenItIsMinimalCondition(new SuggestedTeamOutDto.SuggestedTeamDisciplineDto(),
-                                        currentEpreuve, message);
+
+                                getSuggestedTeamEpreuveDto(suggestedTeamOutDto, currentEpreuve)
+                                        .ifPresent(ste -> ste.setMinimalCondition(
+                                                new SuggestedTeamOutDto.MinimalConditionSuggestedTeam()
+                                                        .withValid(message.keySet().stream().findFirst().orElse(false))
+                                                        .withReason(message.values().stream().findFirst()
+                                                                .orElse("error during computing"))));
                             }
-//                            suggestedTeamOutDto.getDisciplines().add(
-//                                    new SuggestedTeamOutDto.SuggestedTeamDisciplineDto()
-//                                            .withDiscipline(currentEpreuve.getDiscipline().getName())
-//                                            .withEpreuves(List.of(new SuggestedTeamOutDto.SuggestedTeamEpreuveDto()
-//                                                    .withEpreuve(currentEpreuve.getName())
-//                                                    .withMinimalCondition(new SuggestedTeamOutDto.MinimalConditionSuggestedTeam()
-//                                                            .withValid(message.keySet().stream().findFirst().orElse(false))
-//                                                            .withReason(message.values().stream().findFirst()
-//                                                                    .orElse("error during computing")))
-//                                                    .withRemainingPoint((percentValue - riderChampionshipQualificationSum))
-//                                                    .withChampionships(otherCavalierEpreuvePracticesPercent.stream()
-//                                                            .map(cep -> cep.getEpreuve().getName()
-//                                                                    .toUpperCase()).toList())
-//                                            )));
 
                         } else if (PrecisionType.EVENTINGTYPES.equals(detail.getPrecisionType())) {
 
@@ -205,23 +199,20 @@ public class SuggestedService {
                             );
                             if (suggestedTeamOutDto.getDisciplines().isEmpty()) {
                                 log.info("Other condition empty");
+                                setSuggestedPrecision(new SuggestedTeamOutDto.SuggestedTeamDisciplineDto(),
+                                        currentEpreuve);
                             } else {
                                 log.info("Other condition not empty");
+                                double remainPoint = percentValue - riderChampionshipQualificationSum;
+                                getSuggestedTeamEpreuveDto(suggestedTeamOutDto, currentEpreuve)
+                                        .ifPresent(ste -> {
+                                            ste.setRemainingPoint(remainPoint < 0 ? 0 : remainPoint);
+                                            ste.setChampionships(championshipsToCompete);
+//                                            ste.setChampionships(otherCavalierEpreuvePracticesPercent.stream()
+//                                                    .map(cep -> cep.getEpreuve().getName()
+//                                                            .toUpperCase()).toList());
+                                        });
                             }
-                            suggestedTeamOutDto.getDisciplines().add(
-                                    new SuggestedTeamOutDto.SuggestedTeamDisciplineDto()
-                                            .withDiscipline(currentEpreuve.getDiscipline().getName())
-                                            .withEpreuves(List.of(new SuggestedTeamOutDto.SuggestedTeamEpreuveDto()
-                                                    .withEpreuve(currentEpreuve.getName())
-                                                    .withMinimalCondition(new SuggestedTeamOutDto.MinimalConditionSuggestedTeam()
-                                                            .withValid(message.keySet().stream().findFirst().orElse(false))
-                                                            .withReason(message.values().stream().findFirst()
-                                                                    .orElse("error during computing")))
-                                                    .withRemainingPoint((percentValue - riderChampionshipQualificationSum))
-                                                    .withChampionships(otherCavalierEpreuvePracticesPercent.stream()
-                                                            .map(cep -> cep.getEpreuve().getName()
-                                                                    .toUpperCase()).toList())
-                                            )));
                         } else {
                             log.info(String.format("Precision is of type %s", PrecisionType.FINISHEVENTS));
                         }
@@ -229,17 +220,24 @@ public class SuggestedService {
         }
     }
 
-    private SuggestedTeamOutDto.SuggestedTeamDisciplineDto setSuggestedPrecisionWhenItIsMinimalCondition(SuggestedTeamOutDto.SuggestedTeamDisciplineDto suggestedTeamDisciplineDto
-            , Epreuve currentEpreuve, Map<Boolean, String> message) {
+    private Optional<SuggestedTeamOutDto.SuggestedTeamEpreuveDto> getSuggestedTeamEpreuveDto(SuggestedTeamOutDto suggestedTeamOutDto, Epreuve currentEpreuve) {
+        return suggestedTeamOutDto.getDisciplines()
+                .stream()
+                .filter(std ->
+                        std.getDiscipline().equals(currentEpreuve
+                                .getDiscipline().getName()))
+                .flatMap(std -> std.getEpreuves().stream())
+                .filter(ste -> ste.getEpreuve()
+                        .equals(currentEpreuve.getName()))
+                .findFirst();
+    }
+
+    private SuggestedTeamOutDto.SuggestedTeamDisciplineDto setSuggestedPrecision(SuggestedTeamOutDto.SuggestedTeamDisciplineDto suggestedTeamDisciplineDto
+            , Epreuve currentEpreuve) {
 
         suggestedTeamDisciplineDto.setDiscipline(currentEpreuve.getDiscipline().getName());
-        suggestedTeamDisciplineDto.setEpreuves(List.of(new SuggestedTeamOutDto.SuggestedTeamEpreuveDto()
-                .withEpreuve(currentEpreuve.getName())
-                .withMinimalCondition(new SuggestedTeamOutDto.MinimalConditionSuggestedTeam()
-                        .withValid(message.keySet().stream().findFirst().orElse(false))
-                        .withReason(message.values().stream().findFirst()
-                                .orElse("error during computing")))
-        ));
+        suggestedTeamDisciplineDto.setEpreuves(new ArrayList<>(List.of(new SuggestedTeamOutDto.SuggestedTeamEpreuveDto()
+                .withEpreuve(currentEpreuve.getName()))));
         return suggestedTeamDisciplineDto;
     }
 

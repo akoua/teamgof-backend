@@ -3,6 +3,7 @@ package istic.m2.project.gofback.controllers.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import istic.m2.project.gofback.entities.enums.MotivationType;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -51,6 +52,7 @@ public class SuggestedTeamOutDto implements Serializable {
         private String epreuve;
         private MinimalConditionSuggestedTeam minimalCondition;
         @Schema(description = "the total remaining point to need to be qualified to championship")
+        @Min(0)
         private double remainingPoint;
         @Schema(description = "All championship where rider can be win remaining point")
         private List<String> championships;
