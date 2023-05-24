@@ -68,6 +68,7 @@ public class ProjectSecurity {
                 .and()
                 .addFilterBefore(new JwtTokenValidatorFilter(appConfig, refreshJwtTokenService), BasicAuthenticationFilter.class)
                 .httpBasic()
+                .authenticationEntryPoint(new NoPopupBasicAuthenticationEntryPoint())
                 .and()
                 .build();
     }
