@@ -16,6 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @With
 public class TeamOutDto implements Serializable {
+    private long id;
     private String name;
     private String description;
     private MotivationType motivation = MotivationType.DECOUVERTE;

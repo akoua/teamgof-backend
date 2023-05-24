@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.services;
 
+import istic.m2.project.gofback.controllers.dto.SuggestedTeamOutDto;
 import istic.m2.project.gofback.entities.CavalierEpreuvePractice;
 import istic.m2.project.gofback.entities.Epreuve;
 import istic.m2.project.gofback.entities.EpreuveTeamParticipated;
@@ -37,7 +38,7 @@ public class SuggestedService {
      * @param idCavalier identification of cavalier
      * @return {@link String}
      */
-    public String suggestTeamToCavalier(long idCavalier) throws BusinessException {
+    public List<SuggestedTeamOutDto> suggestTeamToCavalier(long idCavalier) throws BusinessException {
         //retrieve cavalier infos and championship he practices
 
 //        Cavalier cavalier = cavalierRepository.findCavalierAndEpreuveCavalierPracticeById(idCavalier)
