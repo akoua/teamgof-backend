@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS poney;
+
+DROP SEQUENCE IF EXISTS poney_id_seq;

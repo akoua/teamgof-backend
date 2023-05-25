@@ -3,6 +3,7 @@ package istic.m2.project.gofback.services;
 import istic.m2.project.gofback.controllers.dto.SuggestedTeamOutDto;
 import istic.m2.project.gofback.entities.*;
 import istic.m2.project.gofback.entities.enums.PrecisionType;
+import istic.m2.project.gofback.entities.enums.SessionType;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.exceptions.ErrorUtils;
 import istic.m2.project.gofback.exceptions.MessageError;
@@ -14,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -33,8 +35,6 @@ public class SuggestedService {
     public List<SuggestedTeamOutDto> suggestTeamToCavalier(long idCavalier) throws BusinessException {
         List<SuggestedTeamOutDto> suggestedTeamOutDtos = new ArrayList<>();
         //retrieve cavalier infos and championship he practices
-//        Cavalier cavalier = cavalierRepository.findCavalierAndEpreuveCavalierPracticeById(idCavalier)
-//                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.CAVALIER_NOT_FOUND, String.format("with id %s", idCavalier)));
         List<CavalierEpreuvePractice> cavalierEpreuvePractices = cavalierEpreuvePracticeRepository.findCavalierEpreuvePracticeByCavalierId(idCavalier)
                 .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_CAVALIER_PRACTICE_NOT_FOUND, String.format("with cavalier id: %s", idCavalier)));
         //retrieve team infos and championship to compete
@@ -58,6 +58,10 @@ public class SuggestedService {
         //verify if cavalier qualification is greater or equals to championship qualification
 
         cavalierEpreuvePractices.forEach(cep -> {
+            // we does not suggest championship where session is PONEY
+            if (SessionType.PONEY.equals(cep.getEpreuve().getSession())) {
+                return;
+            }
             var suggestedTeamOutDto = new SuggestedTeamOutDto()
                     .withDisciplines(new ArrayList<>())
                     .withTeams(new ArrayList<>());
@@ -66,11 +70,6 @@ public class SuggestedService {
                     .filter(team -> team.getEpreuvesParticipated().stream()
                             .anyMatch(epreuve -> epreuve.equals(cep.getEpreuve())))
                     .map(team -> {
-//                        if (null == suggestedTeamOutDto.getTeams()) {
-//                            suggestedTeamOutDto.setTeams(new ArrayList<>(List.of(modelMapper.map(team, SuggestedTeamOutDto.SuggestedTeamDto.class))));
-//                        } else {
-//                            suggestedTeamOutDto.getTeams().add(modelMapper.map(team, SuggestedTeamOutDto.SuggestedTeamDto.class));
-//                        }
                         suggestedTeamOutDto.getTeams().add(modelMapper.map(team, SuggestedTeamOutDto.SuggestedTeamDto.class));
                         return team;
                     })
@@ -79,6 +78,10 @@ public class SuggestedService {
             List<Epreuve> teamschampionships = teamsWhichCompeteToChampionshipPracticedByRider.stream()
                     .flatMap(team -> team.getEpreuvesParticipated().stream())
                     .toList();
+            //we do nothing if we have not team(s) which compete in this championship
+            if (teamschampionships.isEmpty()) {
+                return;
+            }
 
             suggestedTeamOutDtos.add(suggestedTeamOutDto);
 
@@ -110,16 +113,42 @@ public class SuggestedService {
                 log.info(String.format("Precision is empty but cavalier point" +
                         " is suffisant to compete to championship %s", cavalierEpreuvePractice
                         .getEpreuve().getName().toUpperCase()));
+
+                Epreuve currentEpreuve = cavalierEpreuvePractice.getEpreuve();
+                Map<Boolean, String> message = doConditionSummary(cavalierEpreuvePractice.getQualificationCavalier(), championshipQualificationCavalier,
+                        currentEpreuve,
+                        Collections.singletonList(currentEpreuve),
+                        "Rider points are sufficient to compete championship %s",
+                        ""
+                );
+
+                setSuggestedWhenPrecisionIsEmpty(currentEpreuve, message, suggestedTeamOutDto,
+                        cavalierEpreuvePractice.getQualificationCavalier(), championshipQualificationCavalier);
+
             } else {
                 log.info(String.format("Precision is empty but cavalier point" +
                                 " is suffisant to compete to championship %s nevertheless it's rest %s point",
                         cavalierEpreuvePractice.getEpreuve().getName().toUpperCase(),
                         (championshipQualificationCavalier - cavalierEpreuvePractice.getQualificationCavalier())));
+
+                Epreuve currentEpreuve = cavalierEpreuvePractice.getEpreuve();
+
+                Map<Boolean, String> message = doConditionSummary(cavalierEpreuvePractice.getQualificationCavalier(),
+                        championshipQualificationCavalier,
+                        currentEpreuve,
+                        Collections.singletonList(currentEpreuve),
+                        "",
+                        "Rider points are insufficient to compete to championship %s nevertheless it's rest %s point"
+                );
+                setSuggestedWhenPrecisionIsEmpty(currentEpreuve, message, suggestedTeamOutDto,
+                        cavalierEpreuvePractice.getQualificationCavalier(), championshipQualificationCavalier);
+
             }
         } else {
             //if not we use the precision to verify
             log.info(String.format("Precision is not empty"));
-            List<String> championshipsToCompete = new ArrayList<>();
+            List<String> championshipsToCompeteNames = new ArrayList<>();
+            List<CavalierEpreuvePractice> allChampionshipsToCompeteForTheDiscipline = new ArrayList<>();
             precision.getDetails()
                     .forEach(detail -> {
 
@@ -127,18 +156,21 @@ public class SuggestedService {
                                 .filter(cep -> detail.getValues().getEpreuves().stream()
                                         .anyMatch(epreuveId -> epreuveId.equals(cep.getEpreuve().getId())))
                                 .toList();
-                        championshipsToCompete.addAll(otherCavalierEpreuvePracticesPercent.stream()
-                                .map(cep -> cep.getEpreuve().getName()
-                                        .toUpperCase()).toList());
+
+                        otherCavalierEpreuvePracticesPercent.forEach(cep -> {
+                            championshipsToCompeteNames.add(cep.getEpreuve().getName()
+                                    .toUpperCase());
+                            allChampionshipsToCompeteForTheDiscipline.add(cep);
+                        });
 
                         if (PrecisionType.DISCIPLINEPERCENTAGE.equals(detail.getPrecisionType())) {
-                            List<Epreuve> epreuvesPercent = epreuvesTeam.stream()
+                            Set<Epreuve> epreuvesPercent = epreuvesTeam.stream()
                                     .filter(epreuveTeamParticipated -> {
                                         return detail.getValues().getEpreuves()
                                                 .stream().anyMatch(championshipId -> championshipId
                                                         .equals(epreuveTeamParticipated.getId()));
 
-                                    }).toList();
+                                    }).collect(Collectors.toSet());
 
                             List<CavalierEpreuvePractice> cavalierEpreuvePracticesPercent = allCavalierEpreuvePractice.stream()
                                     .filter(cep -> epreuvesPercent.stream()
@@ -153,23 +185,15 @@ public class SuggestedService {
                             Epreuve currentEpreuve = cavalierEpreuvePractice.getEpreuve();
                             double percentValue = calculateChampionshipPercentPoint(currentEpreuve, detail);
 
-                            Map<Boolean, String> message = doConditionSummary(riderChampionshipQualificationSum, percentValue, currentEpreuve, epreuvesPercent,
+                            Map<Boolean, String> message = doConditionSummary(riderChampionshipQualificationSum, percentValue, currentEpreuve,
+                                    epreuvesPercent.stream().toList(),
                                     "Minimal condition validated for championship %s",
                                     "Minimal condition not already validated for championship %s but it's rest %s points in %s"
                             );
 
                             if (suggestedTeamOutDto.getDisciplines().isEmpty()) {
                                 log.info("Minimal condition empty");
-                                SuggestedTeamOutDto.SuggestedTeamDisciplineDto suggestedTeamDisciplineDto = setSuggestedPrecision(new SuggestedTeamOutDto.SuggestedTeamDisciplineDto(),
-                                        currentEpreuve);
-                                suggestedTeamDisciplineDto.getEpreuves().stream().findFirst()
-                                        .ifPresent(ste -> ste.setMinimalCondition(new SuggestedTeamOutDto.MinimalConditionSuggestedTeam()
-                                                .withValid(message.keySet().stream().findFirst().orElse(false))
-                                                .withReason(message.values().stream().findFirst()
-                                                        .orElse("error during computing"))));
-                                suggestedTeamOutDto.getDisciplines().add(
-                                        suggestedTeamDisciplineDto
-                                );
+                                setSuggestedPrecisionMinimalValue(currentEpreuve, suggestedTeamOutDto, message);
                             } else {
                                 log.info("Minimal condition not empty");
 
@@ -183,34 +207,31 @@ public class SuggestedService {
 
                         } else if (PrecisionType.EVENTINGTYPES.equals(detail.getPrecisionType())) {
 
-                            double riderChampionshipQualificationSum = otherCavalierEpreuvePracticesPercent.stream()
+                            double riderChampionshipQualificationSum = allChampionshipsToCompeteForTheDiscipline.stream()
                                     .mapToDouble(CavalierEpreuvePractice::getQualificationCavalier)
                                     .sum();
 
                             Epreuve currentEpreuve = cavalierEpreuvePractice.getEpreuve();
-                            double percentValue = calculateChampionshipPercentPoint(currentEpreuve, detail);
 
-                            // TODO today we print only the championship which rider practice in which it's can exercice more to complete his/her point
-                            Map<Boolean, String> message = doConditionSummary(riderChampionshipQualificationSum, percentValue, currentEpreuve,
-                                    otherCavalierEpreuvePracticesPercent.stream()
-                                            .map(CavalierEpreuvePractice::getEpreuve).toList(),
-                                    "Other condition validated for championship  %s",
-                                    "Other condition not already validated for championship %s but it's rest %s points in %s"
-                            );
+//                            Map<Boolean, String> message = doConditionSummary(riderChampionshipQualificationSum, currentEpreuve.getQualification().getQualificationCavalier(),
+//                                    currentEpreuve,
+//                                    otherCavalierEpreuvePracticesPercent.stream()
+//                                            .map(CavalierEpreuvePractice::getEpreuve).toList(),
+//                                    "Other condition validated for championship  %s",
+//                                    "Other condition not already validated for championship %s but it's rest %s points in %s"
+//                            );
                             if (suggestedTeamOutDto.getDisciplines().isEmpty()) {
                                 log.info("Other condition empty");
                                 setSuggestedPrecision(new SuggestedTeamOutDto.SuggestedTeamDisciplineDto(),
                                         currentEpreuve);
                             } else {
-                                log.info("Other condition not empty");
-                                double remainPoint = percentValue - riderChampionshipQualificationSum;
+                                log.info(String.format("Other condition not empty cavalier qualification required: %s, riderChampionshipQualificationSum: %s",
+                                        currentEpreuve.getQualification().getQualificationCavalier(), riderChampionshipQualificationSum));
+                                double remainPoint = currentEpreuve.getQualification().getQualificationCavalier() - riderChampionshipQualificationSum;
                                 getSuggestedTeamEpreuveDto(suggestedTeamOutDto, currentEpreuve)
                                         .ifPresent(ste -> {
                                             ste.setRemainingPoint(remainPoint < 0 ? 0 : remainPoint);
-                                            ste.setChampionships(championshipsToCompete);
-//                                            ste.setChampionships(otherCavalierEpreuvePracticesPercent.stream()
-//                                                    .map(cep -> cep.getEpreuve().getName()
-//                                                            .toUpperCase()).toList());
+                                            ste.setChampionships(championshipsToCompeteNames);
                                         });
                             }
                         } else {
@@ -218,6 +239,38 @@ public class SuggestedService {
                         }
                     });
         }
+    }
+
+    private void setSuggestedWhenPrecisionIsEmpty(Epreuve currentEpreuve, Map<Boolean, String> message,
+                                                  SuggestedTeamOutDto suggestedTeamOutDto,
+                                                  Integer qualificationCavalier,
+                                                  Integer championshipQualificationCavalier) {
+
+        double remainPoint = championshipQualificationCavalier - qualificationCavalier;
+
+        getSuggestedTeamEpreuveDto(setSuggestedPrecisionMinimalValue(currentEpreuve, suggestedTeamOutDto, message), currentEpreuve)
+                .ifPresent(ste -> {
+                    ste.setRemainingPoint(remainPoint < 0 ? 0 : remainPoint);
+                    ste.setChampionships(Collections.singletonList(currentEpreuve.getName().toUpperCase()));
+                });
+    }
+
+    /**
+     * Allow to set {@link SuggestedTeamOutDto} minimal condition
+     */
+    private SuggestedTeamOutDto setSuggestedPrecisionMinimalValue(Epreuve currentEpreuve, SuggestedTeamOutDto suggestedTeamOutDto, Map<Boolean, String> message) {
+        SuggestedTeamOutDto.SuggestedTeamDisciplineDto suggestedTeamDisciplineDto = setSuggestedPrecision(new SuggestedTeamOutDto.SuggestedTeamDisciplineDto(),
+                currentEpreuve);
+        suggestedTeamDisciplineDto.getEpreuves().stream().findFirst()
+                .ifPresent(ste -> ste.setMinimalCondition(new SuggestedTeamOutDto.MinimalConditionSuggestedTeam()
+                        .withValid(message.keySet().stream().findFirst().orElse(false))
+                        .withReason(message.values().stream().findFirst()
+                                .orElse("error during computing"))
+                ));
+        suggestedTeamOutDto.getDisciplines().add(
+                suggestedTeamDisciplineDto
+        );
+        return suggestedTeamOutDto;
     }
 
     private Optional<SuggestedTeamOutDto.SuggestedTeamEpreuveDto> getSuggestedTeamEpreuveDto(SuggestedTeamOutDto suggestedTeamOutDto, Epreuve currentEpreuve) {
@@ -254,7 +307,7 @@ public class SuggestedService {
             var msg = String.format(failedMessage, currentEpreuve
                             .getName().toUpperCase(), (percentValue - riderChampionshipQualificationSum),
                     epreuvesPercent.stream().map(e -> e.getName().toUpperCase()).toList());
-            message.put(true, msg);
+            message.put(false, msg);
             log.info(msg);
         }
         return message;

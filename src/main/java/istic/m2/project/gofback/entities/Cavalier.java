@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -36,9 +35,6 @@ public class Cavalier extends Auditable<String> {
     private String description;
     private String location;
     private String niveau;
-    @OneToMany(targetEntity = Poney.class, mappedBy = "cavalier", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Poney> poneys;
-
     @ManyToMany(targetEntity = Epreuve.class, fetch = FetchType.LAZY, mappedBy = "cavaliersPracticeEpreuve")
     private Set<Epreuve> epreuveCavalierPractice;
 
