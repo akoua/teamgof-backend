@@ -29,7 +29,7 @@ public class SuggestedTeamOutDto implements Serializable {
         private long id;
         private String name;
         private String description;
-        private MotivationType motivation = MotivationType.DECOUVERTE;
+        private MotivationType motivation = MotivationType.CONVIVIALITY;
         private String departement;
         @Valid
         private List<CreateTeamInDto.TeamMember> members;
