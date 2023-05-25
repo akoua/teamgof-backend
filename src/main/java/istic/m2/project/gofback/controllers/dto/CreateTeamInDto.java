@@ -17,7 +17,7 @@ import java.util.List;
 public class CreateTeamInDto {
     private String name;
     private String description;
-    private MotivationType motivation = MotivationType.DECOUVERTE;
+    private MotivationType motivation = MotivationType.CONVIVIALITY;
     private String departement;
     @Valid
     private List<TeamMember> members;
