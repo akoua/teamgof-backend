@@ -3,7 +3,6 @@ package istic.m2.project.gofback.services;
 import istic.m2.project.gofback.controllers.dto.SuggestedTeamOutDto;
 import istic.m2.project.gofback.entities.*;
 import istic.m2.project.gofback.entities.enums.PrecisionType;
-import istic.m2.project.gofback.entities.enums.SessionType;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.exceptions.ErrorUtils;
 import istic.m2.project.gofback.exceptions.MessageError;
@@ -59,9 +58,9 @@ public class SuggestedService {
 
         cavalierEpreuvePractices.forEach(cep -> {
             // we does not suggest championship where session is PONEY
-            if (SessionType.PONEY.equals(cep.getEpreuve().getSession())) {
-                return;
-            }
+//            if (SessionType.PONEY.equals(cep.getEpreuve().getSession())) {
+//                return;
+//            }
             var suggestedTeamOutDto = new SuggestedTeamOutDto()
                     .withDisciplines(new ArrayList<>())
                     .withTeams(new ArrayList<>());
@@ -70,7 +69,10 @@ public class SuggestedService {
                     .filter(team -> team.getEpreuvesParticipated().stream()
                             .anyMatch(epreuve -> epreuve.equals(cep.getEpreuve())))
                     .map(team -> {
-                        suggestedTeamOutDto.getTeams().add(modelMapper.map(team, SuggestedTeamOutDto.SuggestedTeamDto.class));
+                        SuggestedTeamOutDto.SuggestedTeamDto teamOutDto = modelMapper.map(team, SuggestedTeamOutDto.SuggestedTeamDto.class);
+                        team.getEpreuvesParticipated()
+                                .forEach(epreuve -> teamOutDto.getSessions().add(epreuve.getSession()));
+                        suggestedTeamOutDto.getTeams().add(teamOutDto);
                         return team;
                     })
                     .toList();
@@ -234,8 +236,11 @@ public class SuggestedService {
                                             ste.setChampionships(championshipsToCompeteNames);
                                         });
                             }
+                        } else if (PrecisionType.NUMBER_OF_PARTICIPATED.equals(detail.getPrecisionType())) {
+                            log.info(String.format("Precision is of type %s", PrecisionType.NUMBER_OF_PARTICIPATED));
+                            
                         } else {
-                            log.info(String.format("Precision is of type %s", PrecisionType.FINISHEVENTS));
+                            log.info(String.format("Precision is of type %s", PrecisionType.FINISH_EVENTS));
                         }
                     });
         }

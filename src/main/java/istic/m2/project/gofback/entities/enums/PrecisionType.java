@@ -8,7 +8,9 @@ public enum PrecisionType {
     DISCIPLINEPERCENTAGE,
     //The other championships percent value to be validated
     EVENTINGTYPES,
+    // The x first couple to compete
+    NUMBER_OF_PARTICIPATED,
     //
-    FINISHEVENTS;
+    FINISH_EVENTS;
 
 }

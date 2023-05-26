@@ -21,7 +21,7 @@ public class DisciplineController {
     private final DisciplineService disciplineService;
 
     @PostMapping(path = "add")
-    public ResponseEntity<ResponseDto<ArrayList<Long>>> addDiscipline(@RequestBody @Valid DisciplineInDto disciplineInDto) {
+    public ResponseEntity<ResponseDto<ArrayList<DisciplineOutDto>>> addDiscipline(@RequestBody @Valid DisciplineInDto disciplineInDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto<>(new ArrayList<>(disciplineService.addDiscipline(disciplineInDto))));
     }

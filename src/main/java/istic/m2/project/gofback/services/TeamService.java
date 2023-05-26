@@ -7,6 +7,7 @@ import istic.m2.project.gofback.controllers.dto.TeamOutDto;
 import istic.m2.project.gofback.entities.Cavalier;
 import istic.m2.project.gofback.entities.Epreuve;
 import istic.m2.project.gofback.entities.Team;
+import istic.m2.project.gofback.entities.enums.SessionType;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.exceptions.ErrorUtils;
 import istic.m2.project.gofback.exceptions.MessageError;
@@ -41,6 +42,8 @@ public class TeamService {
 
 
         List<Cavalier> ridersList = findRidersInDatabase(request.getMembers());
+//        List<Team> allTeamsWhichParticipatedToLimitedChampionship =
+//                teamRepository.findAllTeamsWhichParticipatedToLimitedChampionship("NUMBER_OF_PARTICIPATED");
 
         Team team = new Team()
                 .withName(request.getName())
@@ -150,9 +153,11 @@ public class TeamService {
     private TeamOutDto createTeamDto(Team team) {
 
         HashMap<String, List<String>> epreuves = new HashMap<>();
+        Set<SessionType> sessionTypes = new HashSet<>();
         HashMap<String, List<String>> disciplineAndEpreuves = team.getEpreuvesParticipated()
                 .stream()
                 .map(e -> {
+                    sessionTypes.add(e.getSession());
                     String discipline = e.getDiscipline().getName();
                     if (epreuves.containsKey(discipline)) {
                         epreuves.get(discipline)
@@ -174,6 +179,7 @@ public class TeamService {
                 .withDepartement(team.getDepartement())
                 .withMotivation(team.getMotivation())
                 .withMembers(team.getMembers())
+                .withSessions(sessionTypes.stream().toList())
                 .withEpreuves(disciplineAndEpreuves.entrySet()
                         .stream()
                         .map(kv -> new TeamOutDto.DisciplineEpreuveTeam()

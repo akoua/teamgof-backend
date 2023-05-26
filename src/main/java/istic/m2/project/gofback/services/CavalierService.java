@@ -103,6 +103,7 @@ public class CavalierService {
         cavalier.setDescription(requestUpdate.getDescription().isBlank() ? cavalier.getDescription() : requestUpdate.getDescription());
         cavalier.setLocation(requestUpdate.getLocation().isBlank() ? cavalier.getLocation() : requestUpdate.getLocation());
         cavalier.setNiveau(requestUpdate.getNiveau().isBlank() ? cavalier.getNiveau() : requestUpdate.getNiveau());
+        cavalier.setLastModifiedDate(new Date());
 
         //we erase all practice epreuve if nothing is set in the dto, otherwise nothing is happened
         if (requestUpdate.getEpreuves().isEmpty()) {
