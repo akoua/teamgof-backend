@@ -36,7 +36,7 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
             "inner join precision as p on p.epreuve_id = e.epreuve_id " +
             "where p.details @> '[{\"precisionType\": \"NUMBER_OF_PARTICIPATED\"}]'",
             nativeQuery = true)
-    List<Team> findAllTeamsWhichParticipatedToLimitedChampionship(String whereTypeClause);
+    List<Team> findAllTeamsWhichParticipatedToLimitedChampionship();
 
     default Page<Team> findAllTeamsAndEpreuvePagineable(Integer begin, Integer size, Sort sort) {
         return findAllTeamsAndEpreuvePagineable(OffsetLimitPageRequest.of(begin, size, sort));
