@@ -38,6 +38,8 @@ public class EpreuveService {
         HelpFile helpFile = helpFileRepository.findHelpFileByUrl(epreuve.helpFileUrl())
                 .orElse(null);
         List<Epreuve> epreuvesToSave = new ArrayList<>();
+        Exclusion newExclusion = new Exclusion().withLabel(epreuve.exclusion());
+        HelpFile newHelpfile = new HelpFile().withUrl(epreuve.helpFileUrl());
         epreuve.titles()
                 .stream().filter(title -> !title.isEmpty())
                 .forEach(title ->
@@ -48,9 +50,9 @@ public class EpreuveService {
                                 .withQualification(new Epreuve.Qualification(epreuve.qualification().getQualificationCavalier(),
                                         epreuve.qualification().getQualificationEquide()))
                                 .withExclusions(null != exclusion ? Set.of(exclusion) : (epreuve.exclusion().isEmpty() ?
-                                        Set.of() : Set.of(new Exclusion().withLabel(epreuve.exclusion()))))
+                                        Set.of() : Set.of(newExclusion)))
                                 .withHelpFiles(null != helpFile ? Set.of(helpFile) : (epreuve.helpFileUrl().isEmpty()) ?
-                                        Set.of() : Set.of(new HelpFile().withUrl(epreuve.helpFileUrl())))));
+                                        Set.of() : Set.of(newHelpfile))));
 
 
         List<Epreuve> epreuvesSave = epreuveRepository.saveAll(epreuvesToSave);
@@ -100,6 +102,7 @@ public class EpreuveService {
                         },
                         () -> setChampionHelpFile(epreuve, epreuveDto, help));
         if (null != epreuve.getPrecision()) {
+            epreuve.getPrecision().setLastModifiedDate(new Date());
             epreuve.getPrecision().setDetails(epreuveDto.precisions());
         } else {
             epreuve.setPrecision(new Precision().withDetails(epreuveDto.precisions())
@@ -112,6 +115,7 @@ public class EpreuveService {
 
     private void setChampionshipExclusion(Epreuve epreuve, EpreuveUpdateInDto epreuveDto, Exclusion exclu) {
         if (null != exclu) {
+            exclu.setLastModifiedDate(new Date());
             epreuve.setExclusions(Set.of(exclu));
         } else {
             epreuve.setExclusions(Set.of(new Exclusion().withLabel(epreuveDto.exclusion())));
@@ -121,6 +125,7 @@ public class EpreuveService {
     private void setChampionHelpFile(Epreuve epreuve, EpreuveUpdateInDto epreuveDto, HelpFile help) {
         epreuve.setLastModifiedDate(new Date());
         if (null != help) {
+            help.setLastModifiedDate(new Date());
             epreuve.setHelpFiles(Set.of(help));
         } else {
             epreuve.setHelpFiles(Set.of(new HelpFile().withUrl(epreuveDto.helpFileUrl())));

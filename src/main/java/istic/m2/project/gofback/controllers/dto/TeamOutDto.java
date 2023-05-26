@@ -1,8 +1,10 @@
 package istic.m2.project.gofback.controllers.dto;
 
 import istic.m2.project.gofback.entities.enums.MotivationType;
+import istic.m2.project.gofback.entities.enums.SessionType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,9 +25,10 @@ public class TeamOutDto implements Serializable {
     private String departement;
     @Valid
     private List<CreateTeamInDto.TeamMember> members;
-
     @Valid
     private List<DisciplineEpreuveTeam> epreuves;
+    @NotNull
+    private List<SessionType> sessions;
 
     @AllArgsConstructor
     @NoArgsConstructor

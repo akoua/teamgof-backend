@@ -17,18 +17,20 @@ public class DisciplineService {
 
     private final DisciplineRepository disciplineRepository;
 
-    public List<Long> addDiscipline(DisciplineInDto disciplineInDto) {
+    public List<DisciplineOutDto> addDiscipline(DisciplineInDto disciplineInDto) {
         List<Discipline> disciplines = new ArrayList<>();
         disciplineInDto.getNames()
                 .forEach(name -> disciplines.add(new Discipline().withName(name)));
-        return disciplineRepository.saveAll(disciplines)
-                .stream()
-                .map(d -> d.getId())
-                .collect(Collectors.toList());
+        List<Discipline> disciplinesSave = disciplineRepository.saveAll(disciplines);
+        return createDisciplineOutDto(disciplinesSave);
     }
 
     public List<DisciplineOutDto> getAllDisciplineInfos() {
         List<Discipline> disciplines = disciplineRepository.findAllDiscipline().orElse(new ArrayList<>());
+        return createDisciplineOutDto(disciplines);
+    }
+
+    private List<DisciplineOutDto> createDisciplineOutDto(List<Discipline> disciplines) {
         return disciplines.stream()
                 .map(discipline -> new DisciplineOutDto()
                         .withDisciplineId(discipline.getId())
@@ -41,6 +43,5 @@ public class DisciplineService {
                                         ).toList()
                         )
                 ).collect(Collectors.toList());
-
     }
 }

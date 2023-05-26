@@ -2,15 +2,19 @@ package istic.m2.project.gofback.controllers.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import istic.m2.project.gofback.entities.enums.MotivationType;
+import istic.m2.project.gofback.entities.enums.SessionType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.With;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @With
 @Data
@@ -33,6 +37,8 @@ public class SuggestedTeamOutDto implements Serializable {
         private String departement;
         @Valid
         private List<CreateTeamInDto.TeamMember> members;
+        @NotNull
+        private Set<SessionType> sessions = new HashSet<>();
     }
 
     @With
