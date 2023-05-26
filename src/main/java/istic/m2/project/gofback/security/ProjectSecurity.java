@@ -49,13 +49,14 @@ public class ProjectSecurity {
                         new AntPathRequestMatcher("/api/v1/team/create"),
                         new AntPathRequestMatcher("/api/v1/team/update/{teamId}"),
                         new AntPathRequestMatcher("/api/v1/precisions/**"),
-                        new AntPathRequestMatcher("/api/v1/disciplines/**"),
+                        new AntPathRequestMatcher("/api/v1/disciplines/add/**"),
                         new AntPathRequestMatcher("/api/v1/epreuves/**"),
                         new AntPathRequestMatcher("/api/v1/suggested/**")
                 )
                 .authenticated().and()
                 .authorizeHttpRequests()
                 .requestMatchers(new AntPathRequestMatcher("/api/v1/login/**"),
+                        new AntPathRequestMatcher("/api/v1/disciplines/all/infos"),
                         new AntPathRequestMatcher("/api/v1/token/**"),
                         new AntPathRequestMatcher("/v3/api-docs/**"),
                         new AntPathRequestMatcher("/swagger-ui.html"),

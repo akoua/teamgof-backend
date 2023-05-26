@@ -43,7 +43,16 @@ public class TeamService {
 
         List<Cavalier> ridersList = findRidersInDatabase(request.getMembers());
 //        List<Team> allTeamsWhichParticipatedToLimitedChampionship =
-//                teamRepository.findAllTeamsWhichParticipatedToLimitedChampionship("NUMBER_OF_PARTICIPATED");
+//                teamRepository.findAllTeamsWhichParticipatedToLimitedChampionship();
+//        allTeamsWhichParticipatedToLimitedChampionship.stream()
+//                .filter(team -> {
+//                    team.getEpreuvesParticipated().stream()
+//                                    .filter(epreuve ->
+//                                        request.getChampionshipIds().stream().anyMatch(championId ->
+//                                                championId.equals(epreuve.getId())))
+//
+//
+//                })
 
         Team team = new Team()
                 .withName(request.getName())
