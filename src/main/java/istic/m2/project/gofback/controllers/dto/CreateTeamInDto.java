@@ -1,9 +1,11 @@
 package istic.m2.project.gofback.controllers.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import istic.m2.project.gofback.entities.Team;
 import istic.m2.project.gofback.entities.enums.MotivationType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,13 +17,17 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateTeamInDto {
+    @NotBlank
     private String name;
+    @NotBlank
     private String description;
     private MotivationType motivation = MotivationType.CONVIVIALITY;
     private String departement;
     @Valid
-    private List<TeamMember> members;
+    private Team.ContactTeam contactTeam;
     @Valid
+    private List<TeamMember> members;
+    @NotNull
     @Schema(description = "all championships which team compete")
     private List<Long> championshipIds;
 

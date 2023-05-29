@@ -21,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,7 @@ public class TeamService {
     @Transactional
     public TeamOutDto createTeam(@Valid CreateTeamInDto request) throws BusinessException {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         List<Cavalier> ridersList = findRidersInDatabase(request.getMembers());
 //        List<Team> allTeamsWhichParticipatedToLimitedChampionship =
@@ -60,7 +63,10 @@ public class TeamService {
                 .withDepartement(request.getDepartement())
                 .withMotivation(request.getMotivation())
                 .withMembers(request.getMembers())
+                .withTeamContact(request.getContactTeam())
                 .withEpreuvesParticipated(new HashSet<>(findChampionShipsInDatabase(request.getChampionshipIds())));
+
+        team.setCreatedBy(authentication.getName());
 
         setTeamRiders(team, ridersList, request.getMembers());
         return createTeamDto(teamRepository.save(team));
@@ -104,11 +110,25 @@ public class TeamService {
         team.setMotivation(requestUpdate.getMotivation());
         team.setDepartement(requestUpdate.getDepartement());
         team.setMembers(requestUpdate.getMembers());
+        team.setLastModifiedDate(new Date());
+        team.setTeamContact(requestUpdate.getContactTeam());
         team.setEpreuvesParticipated(new HashSet<>(findChampionShipsInDatabase(requestUpdate.getChampionshipIds())));
 
         setTeamRiders(team, ridersList, requestUpdate.getMembers());
 
         return createTeamDto(team);
+    }
+
+    /**
+     * Delete team and all informations about it, like championships wherein compete and all riders link to it
+     */
+    public String deleteTeam(Long teamId) throws BusinessException {
+        try {
+            teamRepository.deleteById(teamId);
+            return "";
+        } catch (Exception e) {
+            throw new BusinessException(MessageError.ERROR_DATABASE, String.format("delete team with id %s", teamId));
+        }
     }
 
     private List<Epreuve> findChampionShipsInDatabase(List<Long> epreuveIds) throws BusinessException {
@@ -151,6 +171,7 @@ public class TeamService {
         }
     }
 
+
     private List<TeamOutDto> createTeamOutDtos(List<Team> allTeamsAndEpreuve) {
         List<TeamOutDto> teamOutDtos = allTeamsAndEpreuve.stream()
                 .map(this::createTeamDto
@@ -188,6 +209,7 @@ public class TeamService {
                 .withDepartement(team.getDepartement())
                 .withMotivation(team.getMotivation())
                 .withMembers(team.getMembers())
+                .withContactTeam(team.getTeamContact())
                 .withSessions(sessionTypes.stream().toList())
                 .withEpreuves(disciplineAndEpreuves.entrySet()
                         .stream()
@@ -196,4 +218,5 @@ public class TeamService {
                                 .withChampionshipNames(kv.getValue()))
                         .toList());
     }
+
 }
