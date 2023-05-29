@@ -61,11 +61,11 @@ public class TeamController {
                 .body(new ResponseDto<>(teamService.updateTeam(teamId, requestUpdate)));
     }
 
-    @DeleteMapping("{teamId}")
+    @DeleteMapping("/delete/{teamId}")
     @Operation(description = "Delete Team and all informations about it")
-    public ResponseEntity<ResponseDto<Long>> updateTeam(@PathVariable Long teamId) throws BusinessException {
+    public ResponseEntity<ResponseDto<String>> deleteTeam(@PathVariable Long teamId) throws BusinessException {
         return ResponseEntity.ok()
-                .body(new ResponseDto<>(teamService.deleTeam(teamId)));
+                .body(new ResponseDto<>(teamService.deleteTeam(teamId)));
     }
 
 }

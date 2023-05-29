@@ -119,6 +119,18 @@ public class TeamService {
         return createTeamDto(team);
     }
 
+    /**
+     * Delete team and all informations about it, like championships wherein compete and all riders link to it
+     */
+    public String deleteTeam(Long teamId) throws BusinessException {
+        try {
+            teamRepository.deleteById(teamId);
+            return "";
+        } catch (Exception e) {
+            throw new BusinessException(MessageError.ERROR_DATABASE, String.format("delete team with id %s", teamId));
+        }
+    }
+
     private List<Epreuve> findChampionShipsInDatabase(List<Long> epreuveIds) throws BusinessException {
         return epreuveRepository.findAllEpreuveWhereIdIn(epreuveIds)
                 .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND, String.format("with ids %s", epreuveIds)));
@@ -158,6 +170,7 @@ public class TeamService {
             team.setMembers(ridersNotAlreadyExist);
         }
     }
+
 
     private List<TeamOutDto> createTeamOutDtos(List<Team> allTeamsAndEpreuve) {
         List<TeamOutDto> teamOutDtos = allTeamsAndEpreuve.stream()
@@ -206,10 +219,4 @@ public class TeamService {
                         .toList());
     }
 
-    /**
-     * Delete team and all informations about it, like championships wherein compete and all riders link to it
-     */
-    public Long deleTeam(Long teamId) {
-        return null;
-    }
 }

@@ -48,6 +48,7 @@ public class ProjectSecurity {
 //                        new AntPathRequestMatcher("/api/v1/login/sign-in/**"),
                         new AntPathRequestMatcher("/api/v1/team/create"),
                         new AntPathRequestMatcher("/api/v1/team/update/{teamId}"),
+                        new AntPathRequestMatcher("/api/v1/team/delete/{teamId}"),
                         new AntPathRequestMatcher("/api/v1/precisions/**"),
                         new AntPathRequestMatcher("/api/v1/disciplines/add/**"),
                         new AntPathRequestMatcher("/api/v1/epreuves/**"),
