@@ -21,8 +21,7 @@ public class CreateTeamInDto {
     private String name;
     @NotBlank
     private String description;
-    @NotNull
-    private MotivationType motivation = MotivationType.DECOUVERTE;
+    private MotivationType motivation = MotivationType.CONVIVIALITY;
     private String departement;
     @Valid
     private Team.ContactTeam contactTeam;

@@ -22,7 +22,7 @@ public class TeamOutDto implements Serializable {
     private long id;
     private String name;
     private String description;
-    private MotivationType motivation = MotivationType.DECOUVERTE;
+    private MotivationType motivation = MotivationType.CONVIVIALITY;
     private String departement;
     private Team.ContactTeam contactTeam;
     @Valid
