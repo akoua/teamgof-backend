@@ -3,6 +3,7 @@ package istic.m2.project.gofback.services;
 import istic.m2.project.gofback.controllers.dto.InscriptionInDto;
 import istic.m2.project.gofback.controllers.dto.LoginInDto;
 import istic.m2.project.gofback.controllers.dto.LoginOutDto;
+import istic.m2.project.gofback.entities.Authority;
 import istic.m2.project.gofback.entities.Cavalier;
 import istic.m2.project.gofback.entities.CavalierEpreuvePractice;
 import istic.m2.project.gofback.entities.Epreuve;
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -56,7 +58,12 @@ public class LoginService {
                 .withEmail(inscriptionInDto.getEmail())
                 .withPwd(passwordEncoder.encode(inscriptionInDto.getPwd()))
                 .withLocation(inscriptionInDto.getLocation())
+                .withNumberFfe(inscriptionInDto.getFfe())
                 .withEpreuveCavalierPractice(new HashSet<>(allEpreuveIn));
+
+        cavalier.setAuthorities(Set.of(new Authority()
+                .withRole(inscriptionInDto.getRole())
+                .withCavalier(cavalier)));
 
         Cavalier finalCavalier = cavalier;
         allEpreuveIn

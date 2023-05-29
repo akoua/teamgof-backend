@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.controllers.dto;
 
+import istic.m2.project.gofback.entities.Team;
 import istic.m2.project.gofback.entities.enums.MotivationType;
 import istic.m2.project.gofback.entities.enums.SessionType;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ public class TeamOutDto implements Serializable {
     private String description;
     private MotivationType motivation = MotivationType.DECOUVERTE;
     private String departement;
+    private Team.ContactTeam contactTeam;
     @Valid
     private List<CreateTeamInDto.TeamMember> members;
     @Valid
