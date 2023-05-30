@@ -39,7 +39,7 @@ public class Epreuve extends Auditable<String> {
     private Set<Cavalier> cavaliersPracticeEpreuve;
     @ManyToMany(targetEntity = Team.class, fetch = FetchType.LAZY, mappedBy = "epreuvesParticipated")
     private Set<Team> teamBelong;
-    @OneToOne(targetEntity = Precision.class, cascade = CascadeType.ALL, mappedBy = "epreuve", orphanRemoval = true)
+    @OneToOne(targetEntity = Precision.class, mappedBy = "epreuve", orphanRemoval = true)
     private Precision precision;
 
     @ManyToMany(targetEntity = Exclusion.class, fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})

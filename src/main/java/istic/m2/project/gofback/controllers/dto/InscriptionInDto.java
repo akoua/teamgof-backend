@@ -1,7 +1,6 @@
 package istic.m2.project.gofback.controllers.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import istic.m2.project.gofback.entities.enums.RoleType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,8 +25,6 @@ public class InscriptionInDto {
     private String pwd;
     @NotBlank
     private String location;
-    @NotBlank
-    private RoleType role = RoleType.CAVALIER;
 
     @Getter
     @Setter

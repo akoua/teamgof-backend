@@ -3,6 +3,7 @@ package istic.m2.project.gofback.entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import istic.m2.project.gofback.entities.enums.RoleType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,8 +43,8 @@ public class Cavalier extends Auditable<String> {
     private Set<Team> teamBelong;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "cavalier", fetch = FetchType.EAGER)
-    private Set<Authority> authorities;
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
     @Override
     public String toString() {

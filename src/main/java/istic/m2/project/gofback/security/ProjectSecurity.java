@@ -6,6 +6,7 @@ import istic.m2.project.gofback.services.RefreshJwtTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +21,11 @@ import java.util.Collections;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableMethodSecurity(
+        prePostEnabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true
+)
 public class ProjectSecurity {
 
     private final AppConfig appConfig;
@@ -51,8 +57,11 @@ public class ProjectSecurity {
                         new AntPathRequestMatcher("/api/v1/team/delete/{teamId}"),
                         new AntPathRequestMatcher("/api/v1/precisions/**"),
                         new AntPathRequestMatcher("/api/v1/disciplines/add/**"),
+                        new AntPathRequestMatcher("/api/v1/disciplines/update/**"),
+                        new AntPathRequestMatcher("/api/v1/disciplines/delete/**"),
                         new AntPathRequestMatcher("/api/v1/epreuves/**"),
-                        new AntPathRequestMatcher("/api/v1/suggested/**")
+                        new AntPathRequestMatcher("/api/v1/suggested/**"),
+                        new AntPathRequestMatcher("/api/v1/teamGofAdmin/**")
                 )
                 .authenticated().and()
                 .authorizeHttpRequests()
@@ -70,12 +79,19 @@ public class ProjectSecurity {
                 )
                 .permitAll()
                 .and()
+//                .authorizeHttpRequests(request -> request
+//                        .requestMatchers("/api/v1/teamGofAdmin/**").hasRole("ADMIN"))
                 .addFilterBefore(new JwtTokenValidatorFilter(appConfig, refreshJwtTokenService), BasicAuthenticationFilter.class)
                 .httpBasic()
                 .authenticationEntryPoint(new NoPopupBasicAuthenticationEntryPoint())
                 .and()
                 .build();
     }
+
+//    @Bean
+//    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+//        return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

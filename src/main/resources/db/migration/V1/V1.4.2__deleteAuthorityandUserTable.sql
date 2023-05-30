@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS authority;
+
+DROP TABLE IF EXISTS "user";
