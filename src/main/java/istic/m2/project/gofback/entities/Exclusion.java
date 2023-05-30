@@ -14,6 +14,6 @@ import java.util.Set;
 @AttributeOverride(name = "id", column = @Column(name = "exclusion_id"))
 public class Exclusion extends Auditable<String> {
     private String label;
-    @ManyToMany(targetEntity = Epreuve.class, cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "exclusions")
+    @ManyToMany(targetEntity = Epreuve.class, fetch = FetchType.LAZY, mappedBy = "exclusions")
     private Set<Epreuve> epreuves;
 }

@@ -31,22 +31,24 @@ public class JwtTokenService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String jwt;
         if (null != authentication) {
-            jwt = buildJwt(authentication.getName());
+            jwt = buildJwt(authentication.getName(), authentication.getAuthorities()
+                    .stream().toList().get(0).toString());
         } else {
             var cavalier = cavalierRepository.findCavalierByEmailIgnoreCase(email)
                     .orElseThrow(() -> new BusinessException(MessageError.CAVALIER_NOT_FOUND, String.format(" with email %s", email)));
-            jwt = buildJwt(cavalier.getEmail());
+            jwt = buildJwt(cavalier.getEmail(), cavalier.getRole().toString());
         }
         return jwt;
     }
 
-    private String buildJwt(String email) {
+    private String buildJwt(String email, String role) {
         var jwtConfig = appConfig.getSecurity().getJwt();
         SecretKey key = Keys.hmacShaKeyFor(jwtConfig.getJwtKey().getBytes(StandardCharsets.UTF_8));
         return Jwts.builder()
                 .setIssuer(jwtConfig.getIssuer())
                 .setSubject(email)
                 .claim("email", email)
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(Date.from(Instant.now().plus(jwtConfig.getExpirationTime(), ChronoUnit.SECONDS)))
                 .signWith(key, SignatureAlgorithm.HS512).compact();
