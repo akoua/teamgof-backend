@@ -1,6 +1,7 @@
 package istic.m2.project.gofback.repositories;
 
 import istic.m2.project.gofback.entities.Discipline;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,6 @@ public interface DisciplineRepository extends JpaRepository<Discipline, Long> {
     Optional<Discipline> findDisciplineByNameIgnoreCase(String name);
 
     @EntityGraph(attributePaths = {"epreuves"})
-    @Query("select d from Discipline d order by d.createdDate")
-    Optional<List<Discipline>> findAllDiscipline();
+    @Query("select d from Discipline d")
+    Optional<List<Discipline>> findAllDiscipline(Sort colName);
 }
