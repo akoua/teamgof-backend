@@ -61,6 +61,13 @@ public class TeamController {
                 .body(new ResponseDto<>(teamService.updateTeam(teamId, requestUpdate)));
     }
 
+    @GetMapping("{teamId}")
+    @Operation(description = "Get a Team")
+    public ResponseEntity<ResponseDto<TeamOutDto>> updateTeam(@PathVariable Long teamId) throws BusinessException {
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(teamService.getTeam(teamId)));
+    }
+
     @DeleteMapping("/delete/{teamId}")
     @Operation(description = "Delete Team and all informations about it")
     public ResponseEntity<ResponseDto<String>> deleteTeam(@PathVariable Long teamId) throws BusinessException {
