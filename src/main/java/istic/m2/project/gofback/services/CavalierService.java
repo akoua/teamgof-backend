@@ -2,6 +2,7 @@ package istic.m2.project.gofback.services;
 
 import istic.m2.project.gofback.controllers.dto.CavalierOwnInfosDtoOut;
 import istic.m2.project.gofback.controllers.dto.CavalierUpdateInDto;
+import istic.m2.project.gofback.controllers.dto.CredentialsUpdateInDto;
 import istic.m2.project.gofback.controllers.dto.InscriptionInDto;
 import istic.m2.project.gofback.entities.Auditable;
 import istic.m2.project.gofback.entities.Cavalier;
@@ -18,6 +19,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +42,7 @@ public class CavalierService {
     private final CavalierEpreuvePracticeRepository cavalierEpreuvePracticeRepository;
     private final EpreuveRepository epreuveRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public CavalierOwnInfosDtoOut findUserInfos(Long id) throws BusinessException {
 
@@ -189,5 +195,21 @@ public class CavalierService {
 
         map.setEpreuves(epreuves);
         return map;
+    }
+
+    @Transactional
+    public Boolean updateCavalierCredentials(CredentialsUpdateInDto requestUpdate) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        Cavalier cavalier = cavalierRepository.findCavalierByEmailIgnoreCase(authentication.getName())
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("username %s not found",
+                        authentication.getName())));
+
+        if (passwordEncoder.matches(requestUpdate.getOldPwd(), cavalier.getPwd())) {
+            cavalier.setPwd(passwordEncoder.encode(requestUpdate.getNewPwd()));
+            cavalier.setLastModifiedDate(new Date());
+            return true;
+        } else {
+            throw new BadCredentialsException("username/password incorrect");
+        }
     }
 }

@@ -2,6 +2,7 @@ package istic.m2.project.gofback.controllers;
 
 import istic.m2.project.gofback.controllers.dto.CavalierOwnInfosDtoOut;
 import istic.m2.project.gofback.controllers.dto.CavalierUpdateInDto;
+import istic.m2.project.gofback.controllers.dto.CredentialsUpdateInDto;
 import istic.m2.project.gofback.controllers.dto.ResponseDto;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.services.CavalierService;
@@ -32,6 +33,13 @@ public class CavalierController {
 
         return ResponseEntity.ok()
                 .body(new ResponseDto<>(cavalierService.updateInfosCavalier(requestUpdate)));
+    }
+
+    @PutMapping("update/credentials")
+    public ResponseEntity<ResponseDto<Boolean>> updateCavalierCredential(@RequestBody @Valid CredentialsUpdateInDto requestUpdate) throws BusinessException, IllegalAccessException {
+
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(cavalierService.updateCavalierCredentials(requestUpdate)));
     }
 
 }

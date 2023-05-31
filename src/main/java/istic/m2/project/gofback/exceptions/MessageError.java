@@ -11,6 +11,7 @@ public enum MessageError {
     TEAM_NOT_FOUND("Team not found in database"),
     PAGINATION_ERROR("Pagination error"),
     ERROR_DATABASE("Database error"),
+    AUTH_ERROR("Authentication error"),
     ERROR_TECHNIQUE("Technical error");
     private String message;
 

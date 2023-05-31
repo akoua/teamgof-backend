@@ -79,8 +79,8 @@ public class ProjectSecurity {
                 )
                 .permitAll()
                 .and()
-//                .authorizeHttpRequests(request -> request
-//                        .requestMatchers("/api/v1/teamGofAdmin/**").hasRole("ADMIN"))
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/v1/teamGofAdmin/**").hasRole("ADMIN"))
                 .addFilterBefore(new JwtTokenValidatorFilter(appConfig, refreshJwtTokenService), BasicAuthenticationFilter.class)
                 .httpBasic()
                 .authenticationEntryPoint(new NoPopupBasicAuthenticationEntryPoint())
