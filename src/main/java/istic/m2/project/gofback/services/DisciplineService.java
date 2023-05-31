@@ -9,6 +9,7 @@ import istic.m2.project.gofback.exceptions.ErrorUtils;
 import istic.m2.project.gofback.exceptions.MessageError;
 import istic.m2.project.gofback.repositories.DisciplineRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +32,7 @@ public class DisciplineService {
     }
 
     public List<DisciplineOutDto> getAllDisciplineInfos() {
-        List<Discipline> disciplines = disciplineRepository.findAllDiscipline().orElse(new ArrayList<>());
+        List<Discipline> disciplines = disciplineRepository.findAllDiscipline(Sort.by(Sort.Direction.DESC, "createdDate")).orElse(new ArrayList<>());
         return createDisciplineOutDtos(disciplines);
     }
 
