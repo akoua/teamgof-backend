@@ -49,8 +49,7 @@ public class TeamController {
     @Operation(description = "Create team")
     public ResponseEntity<ResponseDto<TeamOutDto>> createTeam(@RequestBody @Valid CreateTeamInDto request) throws BusinessException, IllegalAccessException {
 
-        //TODO return team created
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ResponseDto<>(teamService.createTeam(request)));
     }
 

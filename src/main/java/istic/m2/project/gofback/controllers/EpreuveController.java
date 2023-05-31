@@ -5,8 +5,10 @@ import istic.m2.project.gofback.controllers.dto.EpreuveInDto;
 import istic.m2.project.gofback.controllers.dto.EpreuveOutDto;
 import istic.m2.project.gofback.controllers.dto.EpreuveUpdateInDto;
 import istic.m2.project.gofback.controllers.dto.ResponseDto;
+import istic.m2.project.gofback.entities.enums.RoleType;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.services.EpreuveService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,16 +29,19 @@ public class EpreuveController {
     }
 
     @PostMapping(path = "add")
+    @RolesAllowed(value = {RoleType.RoleConstant.ADMIN})
     public ResponseEntity<ResponseDto<ArrayList<EpreuveOutDto>>> addEpreuve(@RequestBody @Valid EpreuveInDto epreuve) throws BusinessException {
         return ResponseEntity.ok(new ResponseDto<>(new ArrayList<>(epreuveService.addEpreuve(epreuve))));
     }
 
     @PutMapping(path = "update")
+    @RolesAllowed(value = {RoleType.RoleConstant.ADMIN})
     public ResponseEntity<ResponseDto<EpreuveOutDto>> updateEpreuve(@RequestBody @Valid EpreuveUpdateInDto epreuve) throws BusinessException {
         return ResponseEntity.ok(new ResponseDto<>(epreuveService.updateEpreuve(epreuve)));
     }
 
     @DeleteMapping("/delete/{idChampionship}")
+    @RolesAllowed(value = {RoleType.RoleConstant.ADMIN})
     @Operation(description = "Delete championship and all information's about it")
     public ResponseEntity<ResponseDto<Boolean>> deleteEpreuve(@PathVariable Long idChampionship) throws BusinessException {
         return ResponseEntity.ok()
