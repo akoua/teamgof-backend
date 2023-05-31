@@ -1,7 +1,7 @@
 package istic.m2.project.gofback.controllers.dto;
 
 import istic.m2.project.gofback.entities.Epreuve;
-import istic.m2.project.gofback.entities.Precision;
+import istic.m2.project.gofback.entities.enums.PrecisionType;
 import istic.m2.project.gofback.entities.enums.SessionType;
 import lombok.*;
 
@@ -20,6 +20,24 @@ public class EpreuveOutDto implements Serializable {
     private Epreuve.Qualification qualification;
     private String helpFileUrl;
     private String exclusion;
-    private List<Precision.PrecisionDto> details;
+    private List<EpreuvePrecisionOutDto> details;
     private SessionType session;
+
+    @Data
+    @With
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EpreuvePrecisionOutDto {
+        private PrecisionType precisionType;
+        private EpreuvePrecisionValueOutDto values;
+    }
+
+    @Data
+    @With
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class EpreuvePrecisionValueOutDto {
+        private Double value;
+        private List<DisciplineOutDto.DisciplineEpreuveDto> epreuves;
+    }
 }

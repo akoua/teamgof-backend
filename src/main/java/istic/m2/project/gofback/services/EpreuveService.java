@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.services;
 
+import istic.m2.project.gofback.controllers.dto.DisciplineOutDto;
 import istic.m2.project.gofback.controllers.dto.EpreuveInDto;
 import istic.m2.project.gofback.controllers.dto.EpreuveOutDto;
 import istic.m2.project.gofback.controllers.dto.EpreuveUpdateInDto;
@@ -155,6 +156,19 @@ public class EpreuveService {
 
     private EpreuveOutDto createEpreuveOutDto(Epreuve epreuve) {
 
+        List<Epreuve> precisionChampionships;
+
+        if (null != epreuve.getPrecision()) {
+            List<Long> championshipIds = epreuve.getPrecision().getDetails().stream()
+                    .flatMap(precisionDto -> precisionDto.getValues().getEpreuves().stream())
+                    .toList();
+
+            precisionChampionships = epreuveRepository.findAllEpreuveWhereIdIn(championshipIds)
+                    .orElse(new ArrayList<>());
+        } else {
+            precisionChampionships = new ArrayList<>();
+        }
+
         return new EpreuveOutDto()
                 .withId(epreuve.getId())
                 .withTitle(epreuve.getName())
@@ -166,7 +180,29 @@ public class EpreuveService {
                 .withExclusion(!epreuve.getExclusions().isEmpty() ?
                         epreuve.getExclusions().stream().map(Exclusion::getLabel).findFirst().orElse("")
                         : "")
-                .withDetails(null != epreuve.getPrecision() ? epreuve.getPrecision().getDetails() : null)
+                .withDetails(null != epreuve.getPrecision() ? epreuve.getPrecision().getDetails().stream()
+                        .map(precisionDto -> new EpreuveOutDto.EpreuvePrecisionOutDto()
+                                .withPrecisionType(precisionDto.getPrecisionType())
+                                .withValues(new EpreuveOutDto.EpreuvePrecisionValueOutDto()
+                                        .withValue(precisionDto.getValues().getValue())
+                                        .withEpreuves(
+                                                precisionDto.getValues().getEpreuves().stream()
+                                                        .map(idEpreuve ->
+                                                                createEpreuveDto(idEpreuve, precisionChampionships))
+                                                        .toList()
+                                        ))).toList()
+                        : null)
                 .withSession(epreuve.getSession());
+    }
+
+    private DisciplineOutDto.DisciplineEpreuveDto createEpreuveDto(Long idEpreuve, List<Epreuve> precisionChampionships) {
+        Epreuve currentChampionship = precisionChampionships.stream()
+                .filter(ep -> ep.getId().equals(idEpreuve))
+                .findFirst()
+                .orElse(new Epreuve());
+
+        return new DisciplineOutDto.DisciplineEpreuveDto()
+                .withChampionshipId(currentChampionship.getId())
+                .withChampionshipName(currentChampionship.getName());
     }
 }
