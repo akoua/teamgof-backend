@@ -55,7 +55,7 @@ public class JwtTokenValidatorFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(
                         new UsernamePasswordAuthenticationToken(String.valueOf(claims.get("email")),
                                 null,
-                                List.of(new SimpleGrantedAuthority(String.valueOf(claims.get("role"))))));
+                                List.of(new SimpleGrantedAuthority("ROLE_" + String.valueOf(claims.get("role"))))));
             }
             //TODO faire generer un nouvel token
 //            else {
