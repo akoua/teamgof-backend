@@ -1,6 +1,7 @@
 package istic.m2.project.gofback.controllers.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import istic.m2.project.gofback.entities.Team;
 import istic.m2.project.gofback.entities.enums.MotivationType;
 import istic.m2.project.gofback.entities.enums.SessionType;
 import jakarta.validation.Valid;
@@ -35,6 +36,7 @@ public class SuggestedTeamOutDto implements Serializable {
         private String description;
         private MotivationType motivation = MotivationType.CONVIVIALITY;
         private String departement;
+        private Team.ContactTeam contactTeam;
         @Valid
         private List<CreateTeamInDto.TeamMember> members;
         @NotNull

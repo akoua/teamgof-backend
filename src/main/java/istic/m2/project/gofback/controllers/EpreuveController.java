@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
 import istic.m2.project.gofback.controllers.dto.EpreuveInDto;
 import istic.m2.project.gofback.controllers.dto.EpreuveOutDto;
 import istic.m2.project.gofback.controllers.dto.EpreuveUpdateInDto;
@@ -33,5 +34,12 @@ public class EpreuveController {
     @PutMapping(path = "update")
     public ResponseEntity<ResponseDto<EpreuveOutDto>> updateEpreuve(@RequestBody @Valid EpreuveUpdateInDto epreuve) throws BusinessException {
         return ResponseEntity.ok(new ResponseDto<>(epreuveService.updateEpreuve(epreuve)));
+    }
+
+    @DeleteMapping("/delete/{idChampionship}")
+    @Operation(description = "Delete championship and all information's about it")
+    public ResponseEntity<ResponseDto<Boolean>> deleteEpreuve(@PathVariable Long idChampionship) throws BusinessException {
+        return ResponseEntity.ok()
+                .body(new ResponseDto<>(epreuveService.deleteChampionship(idChampionship)));
     }
 }

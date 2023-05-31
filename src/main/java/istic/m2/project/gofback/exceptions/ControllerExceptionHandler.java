@@ -4,7 +4,10 @@ import istic.m2.project.gofback.controllers.dto.ResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -20,6 +23,7 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final String BUSSINESS_EXCEPTION = "BUSSINESS EXCEPTION";
     private static final String DATABASE_EXCEPTION = "DATABASE EXCEPTION";
+    private static final String AUTHENTICATION_EXCEPTION = "AUTHENTICATION EXCEPTION";
 
     @ExceptionHandler(BusinessException.class)
     @ResponseBody
@@ -43,6 +47,30 @@ public class ControllerExceptionHandler extends ResponseEntityExceptionHandler {
         body.setError(new ResponseDto.MessageDto(
                 MessageError.ERROR_DATABASE, cutMessage(ex.getRootCause().getMessage(), "Key.*")));
         return ResponseEntity.unprocessableEntity().body(body);
+    }
+
+    @ExceptionHandler({BadCredentialsException.class})
+    @ResponseBody
+    public ResponseEntity<ResponseDto<Serializable>> handleBadCredentialsException(BadCredentialsException ex) {
+        log.error(AUTHENTICATION_EXCEPTION, ex);
+
+        ResponseDto<Serializable> body = new ResponseDto<>();
+        body.setSuccess(false);
+        body.setError(new ResponseDto.MessageDto(
+                MessageError.AUTH_ERROR, ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    }
+
+    @ExceptionHandler({AccessDeniedException.class})
+    @ResponseBody
+    public ResponseEntity<ResponseDto<Serializable>> handleAccessDeniedException(AccessDeniedException ex) {
+        log.error(AUTHENTICATION_EXCEPTION, ex);
+
+        ResponseDto<Serializable> body = new ResponseDto<>();
+        body.setSuccess(false);
+        body.setError(new ResponseDto.MessageDto(
+                MessageError.AUTH_ERROR, ex.getMessage()));
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 
     @ExceptionHandler({InvalidDataAccessApiUsageException.class})

@@ -6,7 +6,10 @@ import istic.m2.project.gofback.controllers.dto.EpreuveUpdateInDto;
 import istic.m2.project.gofback.entities.*;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.exceptions.MessageError;
-import istic.m2.project.gofback.repositories.*;
+import istic.m2.project.gofback.repositories.DisciplineRepository;
+import istic.m2.project.gofback.repositories.EpreuveRepository;
+import istic.m2.project.gofback.repositories.ExclusionRepository;
+import istic.m2.project.gofback.repositories.HelpFileRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +27,6 @@ public class EpreuveService {
     private final EpreuveRepository epreuveRepository;
     private final ExclusionRepository exclusionRepository;
     private final HelpFileRepository helpFileRepository;
-    private final PrecisionRepository precisionRepository;
 
     @Transactional
     public List<EpreuveOutDto> addEpreuve(EpreuveInDto epreuve) throws BusinessException {
@@ -111,6 +113,17 @@ public class EpreuveService {
 
 
         return createEpreuveOutDto(epreuve);
+    }
+
+    public Boolean deleteChampionship(Long idChampionship) throws BusinessException {
+        try {
+            epreuveRepository.deleteById(idChampionship);
+            return true;
+        } catch (Exception e) {
+            throw new BusinessException(MessageError.ERROR_DATABASE, String.format("delete championship with id %s", idChampionship
+            ));
+        }
+
     }
 
     private void setChampionshipExclusion(Epreuve epreuve, EpreuveUpdateInDto epreuveDto, Exclusion exclu) {

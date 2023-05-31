@@ -15,6 +15,6 @@ public interface DisciplineRepository extends JpaRepository<Discipline, Long> {
     Optional<Discipline> findDisciplineByNameIgnoreCase(String name);
 
     @EntityGraph(attributePaths = {"epreuves"})
-    @Query("select d from Discipline d")
+    @Query("select d from Discipline d order by d.createdDate")
     Optional<List<Discipline>> findAllDiscipline();
 }
