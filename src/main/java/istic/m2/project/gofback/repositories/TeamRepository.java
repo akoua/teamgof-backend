@@ -21,6 +21,10 @@ public interface TeamRepository extends JpaRepository<Team, Long> {
     @Query("select t from #{#entityName} t where t.id = :teamId")
     Optional<Team> findTeamAndCavalierParticipatedAndEpreuveParticipatedById(Long teamId);
 
+    @EntityGraph(attributePaths = {"epreuvesParticipated.discipline"})
+    @Query("select t from Team t where t.id = :teamId")
+    Optional<Team> findTeamById(Long teamId);
+
     @Query("select t from Team t ")
     Page<Team> findAllTeamsAndEpreuveWithPagineable(Pageable pageable);
 

@@ -1,6 +1,7 @@
 package istic.m2.project.gofback.services;
 
 import istic.m2.project.gofback.controllers.dto.PrecisionInDto;
+import istic.m2.project.gofback.controllers.dto.PrecisionUpdateInDto;
 import istic.m2.project.gofback.entities.Auditable;
 import istic.m2.project.gofback.entities.Epreuve;
 import istic.m2.project.gofback.entities.Precision;
@@ -11,8 +12,10 @@ import istic.m2.project.gofback.repositories.EpreuveRepository;
 import istic.m2.project.gofback.repositories.PrecisionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,5 +48,18 @@ public class PrecisionService {
         return precisionRepository.saveAll(precisionList).stream()
                 .map(Auditable::getId)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Long updatePrecision(Long championshipId, PrecisionUpdateInDto precisionUpdateInDto) throws BusinessException {
+        Epreuve epreuve = epreuveRepository.findById(championshipId)
+                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_NOT_FOUND,
+                        String.format("with id %s", championshipId)));
+
+        Precision precision = epreuve.getPrecision();
+        precision.setLastModifiedDate(new Date());
+        precision.setDetails(precisionUpdateInDto.getPrecisions());
+
+        return precision.getId();
     }
 }

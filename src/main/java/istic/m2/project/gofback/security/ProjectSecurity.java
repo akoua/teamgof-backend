@@ -74,6 +74,7 @@ public class ProjectSecurity {
                         new AntPathRequestMatcher("/disciplines/**"),
                         new AntPathRequestMatcher("/epreuves/**"),
                         new AntPathRequestMatcher("/api/v1/team/allTeams"),
+                        new AntPathRequestMatcher("/api/v1/team/{teamId}/**"),
                         //TODO must change
                         new AntPathRequestMatcher("/api/v1/epreuves/add/**")
                 )

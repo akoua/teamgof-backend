@@ -98,6 +98,12 @@ public class TeamService {
         return response;
     }
 
+    public TeamOutDto getTeam(Long teamId) throws BusinessException {
+        Team team = teamRepository.findTeamById(teamId)
+                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.TEAM_NOT_FOUND, String.format("with id %s", teamId)));
+        return createTeamDto(team);
+    }
+
     @Transactional
     public TeamOutDto updateTeam(Long teamId, CreateTeamInDto requestUpdate) throws BusinessException {
         Team team = teamRepository.findTeamAndCavalierParticipatedAndEpreuveParticipatedById(teamId)
@@ -218,5 +224,4 @@ public class TeamService {
                                 .withChampionshipNames(kv.getValue()))
                         .toList());
     }
-
 }
