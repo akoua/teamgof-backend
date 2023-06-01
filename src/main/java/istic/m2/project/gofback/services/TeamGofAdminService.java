@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class TeamGofAdminService {
-
     private final TeamGofAdminRepository teamGofAdminRepository;
     private final PasswordEncoder passwordEncoder;
 
