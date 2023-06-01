@@ -1,9 +1,6 @@
 package istic.m2.project.gofback.controllers;
 
-import istic.m2.project.gofback.controllers.dto.InscriptionInDto;
-import istic.m2.project.gofback.controllers.dto.LoginInDto;
-import istic.m2.project.gofback.controllers.dto.LoginOutDto;
-import istic.m2.project.gofback.controllers.dto.ResponseDto;
+import istic.m2.project.gofback.controllers.dto.*;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.services.LoginService;
 import jakarta.validation.Valid;
@@ -29,5 +26,10 @@ public class LoginController {
     @PostMapping(path = "sign-in")
     public ResponseEntity<ResponseDto<LoginOutDto>> connexion(@RequestBody @Valid LoginInDto loginInDto) throws BusinessException {
         return ResponseEntity.ok(new ResponseDto<>(loginService.connexionService(loginInDto)));
+    }
+
+    @PostMapping(path = "admin/sign-in")
+    public ResponseEntity<ResponseDto<LoginAdminOutDto>> connexionAdmin(@RequestBody @Valid LoginInDto loginInDto) throws BusinessException {
+        return ResponseEntity.ok(new ResponseDto<>(loginService.connexionAdminService(loginInDto)));
     }
 }

@@ -1,11 +1,13 @@
 package istic.m2.project.gofback.services;
 
 import istic.m2.project.gofback.controllers.dto.InscriptionInDto;
+import istic.m2.project.gofback.controllers.dto.LoginAdminOutDto;
 import istic.m2.project.gofback.controllers.dto.LoginInDto;
 import istic.m2.project.gofback.controllers.dto.LoginOutDto;
 import istic.m2.project.gofback.entities.Cavalier;
 import istic.m2.project.gofback.entities.CavalierEpreuvePractice;
 import istic.m2.project.gofback.entities.Epreuve;
+import istic.m2.project.gofback.entities.TeamGofAdmin;
 import istic.m2.project.gofback.entities.enums.RoleType;
 import istic.m2.project.gofback.exceptions.BusinessException;
 import istic.m2.project.gofback.exceptions.ErrorUtils;
@@ -104,5 +106,17 @@ public class LoginService {
                         .collect(Collectors.toList())
                 )
         );
+    }
+
+    public LoginAdminOutDto connexionAdminService(LoginInDto loginInDto) throws BusinessException {
+        TeamGofAdmin teamGofAdmin = teamGofAdminRepository.findTeamGofAdminByEmail(loginInDto.email())
+                .orElseThrow(() -> ErrorUtils.throwBusnessException(MessageError.EPREUVE_CAVALIER_PRACTICE_NOT_FOUND,
+                        String.format("with cavalier id %s", loginInDto.email())));
+
+        return new LoginAdminOutDto(jwtTokenService.generateToken(loginInDto.email()),
+                "", new LoginAdminOutDto.AdminLoginInfoOutDto()
+                .withUserId(teamGofAdmin.getId())
+                .withEmail(teamGofAdmin.getEmail())
+                .withRole(teamGofAdmin.getRole()));
     }
 }
