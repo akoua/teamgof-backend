@@ -13,8 +13,10 @@ import istic.m2.project.gofback.exceptions.MessageError;
 import istic.m2.project.gofback.repositories.CavalierEpreuvePracticeRepository;
 import istic.m2.project.gofback.repositories.CavalierRepository;
 import istic.m2.project.gofback.repositories.EpreuveRepository;
+import istic.m2.project.gofback.repositories.TeamGofAdminRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +27,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class LoginService {
     private final EpreuveRepository epreuveRepository;
     private final CavalierRepository cavalierRepository;
     private final CavalierEpreuvePracticeRepository cavalierEpreuvePracticeRepository;
+    private final TeamGofAdminRepository teamGofAdminRepository;
     private final JwtTokenService jwtTokenService;
     private final RefreshJwtTokenService refreshJwtTokenService;
 
@@ -91,6 +95,7 @@ public class LoginService {
                 .withFirstName(cavalier.getFirstName())
                 .withLastName(cavalier.getLastName())
                 .withEmail(cavalier.getEmail())
+                .withRole(cavalier.getRole())
                 .withEpreuves(cavalierEpreuvePractices
                         .stream()
                         .map(etp -> new InscriptionInDto.ChampionShipInscription()

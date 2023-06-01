@@ -1,5 +1,6 @@
 package istic.m2.project.gofback.controllers.dto;
 
+import istic.m2.project.gofback.entities.enums.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public record LoginOutDto(String accessToken, String refreshToken, UserLoginInfo
         private String firstName;
         private String lastName;
         private String email;
+        private RoleType role;
         private List<InscriptionInDto.ChampionShipInscription> epreuves;
 
     }
